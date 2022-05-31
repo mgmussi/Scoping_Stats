@@ -13,3 +13,5 @@ pd.set_option('display.max_columns', None)
 print(df)
 print(df['ID'].values)
 print(df['On_ACC'].values)
+
+#loop through values and take '-' out
