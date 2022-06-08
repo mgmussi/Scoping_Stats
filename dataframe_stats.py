@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import pandas as pd
 
 df = pd.read_excel('__Dataframe_ScopingReview.xlsx', sheet_name=1, header=[0])
 pd.set_option('display.max_rows',20)
@@ -18,6 +19,7 @@ pd.set_option('display.max_columns', None)
 # print(df['On_ACC'].values)
 sns.set_style("darkgrid")
 idx = (df['On_ACC'].values != '-')
+idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
 
 ## Acc per paper
 for index,row in df.iterrows():
@@ -36,16 +38,20 @@ plt.show()
 
 
 ## Violin plot
+idx_het = [counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Heterogeneous']
+idx_hom = [counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Homogeneous']
 
-##combine arrays and use np.unique(x) to get all values that dont have - and are Hom or Het
-idx2 = (df['_Div_input'].values == 'Homogeneous' and df['On_ACC'].values != '-') 
-idx3 = (df['_Div_input'].values == 'Heterogeneous' and df['On_ACC'].values != '-')
+# idx_hom_acc = np.unique(np.array(idx_hom + idx_acc))
+idx_hom_acc = list(set.intersection(set(idx_hom), set(idx_acc)))
+# idx_het_acc = np.unique(np.array(idx_het + idx_acc))
+idx_het_acc = list(set.intersection(set(idx_het), set(idx_acc)))
+
 plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx2], y = df['On_ACC'][idx2].astype(float), 
-               hue = df['_Div_input_sp'][idx2], split = False, data = df)
+sns.violinplot(x = df['_Div_input'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc].astype(float), 
+               hue = df['_Div_input_sp'][idx_hom_acc], split = True, data = df)
 plt.show()
 
 plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx3], y = df['On_ACC'][idx3].astype(float), 
-               hue = df['_Div_input_sp'][idx3], split = False, data = df)
+sns.violinplot(x = df['_Div_input'][idx_het_acc], y = df['On_ACC'][idx_het_acc].astype(float), 
+               hue = df['_Div_input_sp'][idx_het_acc], split = True, data = df)
 plt.show()
