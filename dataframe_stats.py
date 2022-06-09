@@ -22,11 +22,16 @@ idx = (df['On_ACC'].values != '-')
 idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
 
 ## Acc per paper
-for index,row in df.iterrows():
-    if row['On_ACC'] != '-':
-        plt.plot(int(row['ID']), float(row['On_ACC']), 'k.-')
-    
-sns.rugplot(data = df, x = df['ID'][idx], y = df['On_ACC'][idx])
+plt.figure(figsize = (5,6), dpi =300)
+plt.plot(df['Year'][idx_acc].astype(int), df['On_ACC'][idx_acc].astype(float), 'k.')    
+sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
+plt.show()
+
+
+## Acc per paper
+plt.figure(figsize = (5,6), dpi =300)
+sns.lineplot(data = df, x = df['Year'][idx], y = df['On_ACC'][idx])
+sns.rugplot(data = df, x = df['Year'][idx], y = df['On_ACC'][idx])
 plt.show()
 
 
@@ -46,12 +51,68 @@ idx_hom_acc = list(set.intersection(set(idx_hom), set(idx_acc)))
 # idx_het_acc = np.unique(np.array(idx_het + idx_acc))
 idx_het_acc = list(set.intersection(set(idx_het), set(idx_acc)))
 
+## Acc per paper
+plt.figure(figsize = (5,6), dpi =300)
+sns.lineplot(data = df, x = df['Year'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc])
+sns.rugplot(data = df, x = df['Year'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc])
+plt.show()
+
+## Acc per paper
+plt.figure(figsize = (5,6), dpi =300)
+sns.lineplot(data = df, x = df['Year'][idx_het_acc], y = df['On_ACC'][idx_het_acc])
+sns.rugplot(data = df, x = df['Year'][idx_het_acc], y = df['On_ACC'][idx_het_acc])
+plt.show()
+
+## Single-brain approach    // Multi-brain approach
+plt.figure(figsize = (5,6), dpi =300)
+sns.violinplot(x = df['_Div_input'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc].astype(float), 
+               hue = df['_Div_input_sp'][idx_hom_acc], split = True, data = df,
+               scale="count", inner="stick")
+plt.show()
+
+## Extern input             // Multy-physiological
+plt.figure(figsize = (5,6), dpi =300)
+sns.violinplot(x = df['_Div_input'][idx_het_acc], y = df['On_ACC'][idx_het_acc].astype(float), 
+               hue = df['_Div_input_sp'][idx_het_acc], split = True, data = df,
+               scale="width", inner="stick")
+plt.show()
+
+
+
+
+## Single-brain approach    // Multi-brain approach
 plt.figure(figsize = (5,6), dpi =300)
 sns.violinplot(x = df['_Div_input'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc].astype(float), 
                hue = df['_Div_input_sp'][idx_hom_acc], split = True, data = df)
 plt.show()
 
+## Extern input             // Multy-physiological
 plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx_het_acc], y = df['On_ACC'][idx_het_acc].astype(float), 
-               hue = df['_Div_input_sp'][idx_het_acc], split = True, data = df)
+sns.violinplot(x = df['_Div_input'][idx_acc], y = df['On_ACC'][idx_acc].astype(float), 
+               hue = df['_Div_input_sp'][idx_acc], col = df['Control'][idx_het_acc],
+               split = False, data = df)
+plt.show()
+
+
+
+## Extern input             // Multy-physiological
+plt.figure(figsize = (10,6), dpi =300)
+sns.violinplot(x = df['Year'][idx_acc].astype(int), y = df['On_ACC'][idx_acc].astype(float), 
+               hue = df['_Div_input'][idx_acc], split = False,
+               scale="width", inner="stick", data = df)
+plt.show()
+
+
+
+
+plt.figure(figsize = (5,6), dpi =300)
+sns.violinplot(x = df['_Div_input'][idx_acc], y = df['On_ACC'][idx_acc].astype(float), 
+               split = False, data = df, scale="count", inner="stick")
+plt.show()
+
+
+
+plt.figure(figsize = (10,6), dpi =300)
+sns.violinplot(x = df['Control'][idx_acc], y = df['On_ACC'][idx_acc].astype(float), 
+               split = False, data = df, scale="count", inner="stick")
 plt.show()
