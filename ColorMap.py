@@ -13,7 +13,9 @@ class RGB(Color):
     def hex_format(self):
         '''Returns color in hex format'''
         return '#{:02X}{:02X}{:02X}'.format(self.red,self.green,self.blue)
-
+    
+def return_palette_list(colors_dic):
+    return list(colors_dic.items())
 
 #Color Contants
 ALICEBLUE = RGB(240, 248, 255)
@@ -1127,4 +1129,3 @@ items = list(colors.items())
 random.shuffle(items)
 colors = OrderedDict(items)
 
-CLR = list(colors.items())

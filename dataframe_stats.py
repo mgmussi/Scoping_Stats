@@ -14,7 +14,10 @@ import pandas as pd
 import os
 import random
 
-ColorMap
+
+execfile("ColorMap.py")
+CLR = return_palette_list(colors)
+
 sns.set_style("darkgrid")
 
 cwd = os.getcwd()+'/__Dataframe_ScopingReview.xlsx'
@@ -33,12 +36,18 @@ idx_age_ = [counter for counter, value in enumerate(np.array(df['Pop_age'].astyp
 idx_age_sv = [counter for counter, value in enumerate(np.array(df['Pop_age'][idx_age].astype(str))) if not('-' in value)]
 idx_DivIn = [[counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Heterogeneous'],
              [counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Homogeneous']]
+idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning & Selective Attention']]
 
 
 idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
 idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
 idx_age_single = list(set.intersection(set(idx_age), set(idx_age_), set(idx_acc)))
 idx_age_range = list(set.intersection(set(idx_age), set(idx_age_to_), set(idx_acc)))
+idx_sel_acc = list(set.intersection(set(idx_MeStr[0]), set(idx_acc)))
+idx_opr_acc = list(set.intersection(set(idx_MeStr[1]), set(idx_acc)))
+idx_sel_opr_acc = list(set.intersection(set(idx_MeStr[2]), set(idx_acc)))
 ###############################################################################
 ################################## FUNCTIONS ##################################
 ###############################################################################
@@ -55,6 +64,7 @@ def cite_lbl(idx):
 ###############################################################################
 ################# Barplot for Papers/Years (selected articles) ################
 ###############################################################################
+sns.set_style("darkgrid")
 plt.figure(figsize = (5,3.5), dpi =300)
 graph = sns.countplot(df['Year'].astype(int), palette = "flare")
 graph.set_title("Papers per Year")
@@ -75,6 +85,7 @@ plt.show()
 ###############################################################################
 ########################### Point plot acc per year ###########################
 ###############################################################################
+sns.set_style("darkgrid")
 plt.figure(figsize = (5,4), dpi =300)
 graph = sns.stripplot(x = df['Year'][idx_acc].astype(int), y = df['On_ACC'][idx_acc].astype(float),
               data = df, edgecolor='gray', size=12.5, alpha = .65, palette='Set2')    
@@ -87,7 +98,6 @@ plt.show()
 ###############################################################################
 sns.set_style("whitegrid")
 plt.figure(figsize = (5,7), dpi =500)
-
 c = 1
 for _range in idx_age_range:
     a = random.random()
@@ -126,56 +136,94 @@ for _range in idx_age_single:
                  textcoords = "offset points", xytext = (2,-1), ha = 'left',
                  fontsize = 4)
     
-plt.title("Age range vs. Accuracy ")
-plt.ylabel("Accuracy")
-plt.xlabel("Age")
+plt.title("Age range vs. Accuracy")
+plt.ylabel("Accuracy [%]")
+plt.xlabel("Age [years]")
 plt.show()
 ###############################################################################
+################################# Violin plot #################################
 ###############################################################################
-###############################################################################
-## Violin plot
-## Acc per paper
-plt.figure(figsize = (5,6), dpi =300)
-sns.lineplot(data = df, x = df['Year'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc])
-sns.rugplot(data = df, x = df['Year'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc])
+#/**
+# * Diversity of Input Comparison
+# */
+sns.set_style("darkgrid")
+a = round(len(CLR)*random.random())
+b = round(len(CLR)*random.random())
+c = round(len(CLR)*random.random())
+d = round(len(CLR)*random.random())
+## Single-brain approach // Multi-brain approach
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (10,7), dpi =300)
+fig.suptitle("Accuracy distribution for Diversity of Input", size = 18)
+g = sns.violinplot(ax = ax1, 
+               x = df['_Div_input'][idx_hom_acc],
+               y = df['On_ACC'][idx_hom_acc].astype(float),
+               hue = df['_Div_input_sp'][idx_hom_acc],
+               split = True,
+               data = df,
+               scale="count",
+               inner="stick",
+               palette = [CLR[a][1].hex_format(), CLR[b][1].hex_format()],
+               title = '')
+g.legend(loc = "lower right", title = "Approach");
+ax1.set_ylabel("Accuracy [%]")
+ax1.set_xlabel("")
+g.set_ylim([30,120])
+## Extern input // Multy-physiological
+g = sns.violinplot(ax = ax2,
+               x = df['_Div_input'][idx_het_acc],
+               y = df['On_ACC'][idx_het_acc].astype(float), 
+               hue = df['_Div_input_sp'][idx_het_acc],
+               split = True,
+               data = df,
+               scale="width",
+               inner="stick",
+               palette = [CLR[c][1].hex_format(), CLR[d][1].hex_format()],
+               title = '')
+g.legend(loc = "lower right", title = "Approach");
+ax2.set_ylabel("")
+ax2.set_xlabel("")
+g.set_ylim([30,120])
 plt.show()
-
-## Acc per paper
-plt.figure(figsize = (5,6), dpi =300)
-sns.lineplot(data = df, x = df['Year'][idx_het_acc], y = df['On_ACC'][idx_het_acc])
-sns.rugplot(data = df, x = df['Year'][idx_het_acc], y = df['On_ACC'][idx_het_acc])
+#/**
+# * Diversity of Mental Strategy
+# */
+sns.set_style("darkgrid")
+a = round(len(CLR)*random.random())
+b = round(len(CLR)*random.random())
+c = round(len(CLR)*random.random())
+plt.figure(figsize = (8,4), dpi =500)
+g = sns.violinplot(x = df['_Mental_str'][idx_acc],
+               y = df['On_ACC'][idx_acc].astype(float), 
+               # hue = df['_Div_input_sp'][idx_sel_acc],
+               inner='stick',
+               split = False,
+               palette = [CLR[a][1].hex_format(),CLR[b][1].hex_format(),CLR[c][1].hex_format()],
+               data = df)
+g.set_xticklabels(['Operant\nConditioning', 'Operant Conditioning\n& Selective Attention',
+                   'Selective\nAttention'])
+# sns.set(font_scale = 1)
+plt.title("Accuracy distribution for Mental Strategies")
+plt.ylabel("Accuracy [%]")
+plt.xlabel("")
 plt.show()
-
-## Single-brain approach    // Multi-brain approach
-plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc].astype(float), 
-               hue = df['_Div_input_sp'][idx_hom_acc], split = True, data = df,
-               scale="count", inner="stick")
+#/**
+# * Diversity of Mental Strategy
+# */
+sns.set_style("darkgrid")
+plt.figure(figsize = (5,4), dpi =300)
+g = sns.stripplot(x = df['_Mental_str'][idx_acc],
+                      y = df['On_ACC'][idx_acc].astype(float),
+                      data = df,
+                      edgecolor='white',
+                      size=10,
+                      alpha = .65,
+                      palette=[CLR[a][1].hex_format(),CLR[b][1].hex_format(),CLR[c][1].hex_format()])    
+g.set_title("Accuracy distribution for Mental Strategies")
+g.set_xticklabels(['Operant\nConditioning', 'Operant Conditioning\n& Selective Attention',
+                   'Selective\nAttention'])
+g.set_ylabel("Accuracy [%]")
+g.set_xlabel("")
 plt.show()
-
-## Extern input             // Multy-physiological
-plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx_het_acc], y = df['On_ACC'][idx_het_acc].astype(float), 
-               hue = df['_Div_input_sp'][idx_het_acc], split = True, data = df,
-               scale="width", inner="stick")
-plt.show()
-
-
-
-
-## Single-brain approach    // Multi-brain approach
-plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx_hom_acc], y = df['On_ACC'][idx_hom_acc].astype(float), 
-               hue = df['_Div_input_sp'][idx_hom_acc], split = True, data = df)
-plt.show()
-
-## Extern input             // Multy-physiological
-plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx_acc], y = df['On_ACC'][idx_acc].astype(float), 
-               hue = df['_Div_input_sp'][idx_acc], col = df['Control'][idx_het_acc],
-               split = False, data = df)
-plt.show()
-
 
 
 ## Extern input             // Multy-physiological
