@@ -1126,6 +1126,6 @@ colors['yellow1'] = YELLOW1
 # colors['yellow4'] = YELLOW4
 # colors = OrderedDict(sorted(colors.items(), key=lambda t: t[0]))
 items = list(colors.items())
-random.shuffle(items)
+# random.shuffle(items)
 colors = OrderedDict(items)
 

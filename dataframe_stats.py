@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import os
 import random
+import itertools
 
 
 execfile("ColorMap.py")
@@ -39,7 +40,47 @@ idx_DivIn = [[counter for counter, value in enumerate(np.array(df['_Div_input'])
 idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
              [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
              [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning & Selective Attention']]
+idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning & Selective Attention']]
 
+
+##Combination of Brain Signals
+comb_parad = np.zeros([5,6]).astype(int)
+idx = {'SSEP':0, 'ERP':1, 'SMR':2, 'mu':3, 'SCP':4}
+for value in np.array(df['_Brain_sign']):
+    str_array = value.split(',')
+    for a, b in itertools.product(str_array, repeat = 2):
+        comb_parad[idx[a],idx[b]] += 1
+for c,x in enumerate(comb_parad):
+    comb_parad[c,5] = (comb_parad[c,c]*2) - sum(comb_parad[c])
+comb_parad[3,2] = 0 #since all mu paradigms have SMR,
+comb_parad[3,5] = 1 #I'll disconsider them and explain on the paper
+print(comb_parad)
+
+##Number of Div of Input
+comb_div_input = np.zeros([2,2]).astype(int)
+idx_1 = {'Homogeneous':0, 'Heterogeneous':1}
+idx_2 = {'Single-Brain Approach':0, 'Multi-Brain Approach':1,
+         'Multi-Physiological':2, 'External Input':3}
+for value in np.array(df['_Div_input_sp']):
+    if(idx_2[value]<2):
+        comb_div_input[idx_1['Homogeneous'], idx_2[value]%2] += 1
+    else:
+        comb_div_input[idx_1['Heterogeneous'], idx_2[value]%2] += 1
+        
+##Combination of Simtuli Modalities
+comb_stim_mod = np.zeros([4,5]).astype(int)
+idx = {'Visual':0, 'Tactile':1, 'Operant':2, 'Auditory':3}
+for value in np.array(df['_Stim_mod']):
+    str_array = value.split(',')
+    for a, b in itertools.product(str_array, repeat = 2):
+        comb_stim_mod[idx[a],idx[b]] += 1
+for c,x in enumerate(comb_parad):
+    comb_stim_mod[c,4] = (comb_stim_mod[c,c]*2) - sum(comb_stim_mod[c])
+# comb_parad[3,2] = 0 #since all mu paradigms have SMR,
+# comb_parad[3,5] = 1 #I'll disconsider them and explain on the paper
+print(comb_stim_mod)
 
 idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
 idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
@@ -71,17 +112,19 @@ graph.set_title("Papers per Year")
 graph.set_ylabel("Number of articles")
 graph.set_xlabel("Year")
 plt.ylim([0,18])
+plt.yticks(range(0,18,2))
 plt.show()
 
 ## Barplot for Papers/Years (all articles)
-a  = [2020, 2015, 2011, 2017, 2019, 2018, 2018, 2020, 2012, 2020, 2016, 2015, 2017, 2020, 2020, 2017, 2020, 2018, 2014, 2014, 2019, 2014, 2019, 2015, 2016, 2014, 2018, 2015, 2014, 2020, 2020, 2016, 2020, 2020, 2015, 2020, 2019, 2018, 2020, 2020, 2019, 2017, 2020, 2012, 2010, 2016, 2012, 2018, 2015, 2013, 2019, 2016, 2015, 2013, 2016, 2015, 2004, 2019, 2019, 2020, 2018, 2016, 2014, 2013, 2019, 2018, 2018, 2015, 2012, 2019, 2011, 2013, 2018, 2018, 2017, 2015, 2015, 2018, 2016, 2019, 2018, 2014, 2017, 2020, 2019, 2013, 2015, 2017, 2017, 2014, 2018, 2018, 2016, 2015, 2016, 2016, 2017, 2015, 2014, 2018, 2019, 2013, 2013, 2010, 2016, 2019, 2017, 2017, 2016, 2015, 2017, 2015, 2013, 2015, 2018, 2013, 2019, 2013, 2016, 2017, 2015, 2017, 2011, 2011, 2013, 2019, 2017, 2011, 2019, 2020, 2012, 2014, 2020, 2015, 2019, 2015, 2017, 2015, 2010, 2019, 2017, 2017, 2019, 2014, 2018, 2015, 2019, 2015, 2018, 2019, 2020, 2017]
-plt.figure(figsize = (5,3.5), dpi =300)
-graph = sns.countplot(a, palette = "rocket")
-graph.set_title("Papers per Year")
-graph.set_ylabel("Number of articles")
-graph.set_xlabel("Year")
-# plt.ylim([0,18])
-plt.show()
+# a  = [2020, 2015, 2011, 2017, 2019, 2018, 2018, 2020, 2012, 2020, 2016, 2015, 2017, 2020, 2020, 2017, 2020, 2018, 2014, 2014, 2019, 2014, 2019, 2015, 2016, 2014, 2018, 2015, 2014, 2020, 2020, 2016, 2020, 2020, 2015, 2020, 2019, 2018, 2020, 2020, 2019, 2017, 2020, 2012, 2010, 2016, 2012, 2018, 2015, 2013, 2019, 2016, 2015, 2013, 2016, 2015, 2004, 2019, 2019, 2020, 2018, 2016, 2014, 2013, 2019, 2018, 2018, 2015, 2012, 2019, 2011, 2013, 2018, 2018, 2017, 2015, 2015, 2018, 2016, 2019, 2018, 2014, 2017, 2020, 2019, 2013, 2015, 2017, 2017, 2014, 2018, 2018, 2016, 2015, 2016, 2016, 2017, 2015, 2014, 2018, 2019, 2013, 2013, 2010, 2016, 2019, 2017, 2017, 2016, 2015, 2017, 2015, 2013, 2015, 2018, 2013, 2019, 2013, 2016, 2017, 2015, 2017, 2011, 2011, 2013, 2019, 2017, 2011, 2019, 2020, 2012, 2014, 2020, 2015, 2019, 2015, 2017, 2015, 2010, 2019, 2017, 2017, 2019, 2014, 2018, 2015, 2019, 2015, 2018, 2019, 2020, 2017]
+# plt.figure(figsize = (5,3.5), dpi =300)
+# graph = sns.countplot(a, palette = "rocket")
+# graph.set_title("Papers per Year")
+# graph.set_ylabel("Number of articles")
+# graph.set_xlabel("Year")
+# # plt.ylim([0,18])
+# plt.show()
+'''
 ###############################################################################
 ########################### Point plot acc per year ###########################
 ###############################################################################
@@ -93,6 +136,7 @@ graph = sns.stripplot(x = df['Year'][idx_acc].astype(int), y = df['On_ACC'][idx_
 graph.set_title("Accuracy per Year")
 graph.set_ylabel("Accuracy [%]")
 plt.show()
+'''
 ###############################################################################
 ########################### Plot age range vs. acc ############################
 ###############################################################################
@@ -206,8 +250,12 @@ plt.title("Accuracy distribution for Mental Strategies")
 plt.ylabel("Accuracy [%]")
 plt.xlabel("")
 plt.show()
+'''
+###############################################################################
+################################# Points plot #################################
+###############################################################################
 #/**
-# * Diversity of Mental Strategy
+# * Diversity of Mental Strategy Points
 # */
 sns.set_style("darkgrid")
 plt.figure(figsize = (5,4), dpi =300)
@@ -224,27 +272,215 @@ g.set_xticklabels(['Operant\nConditioning', 'Operant Conditioning\n& Selective A
 g.set_ylabel("Accuracy [%]")
 g.set_xlabel("")
 plt.show()
-
-
-## Extern input             // Multy-physiological
-plt.figure(figsize = (10,6), dpi =300)
-sns.violinplot(x = df['Year'][idx_acc].astype(int), y = df['On_ACC'][idx_acc].astype(float), 
-               hue = df['_Div_input'][idx_acc], split = False,
-               scale="width", inner="stick", data = df)
+#/**
+# * Diversity of Brain Signals Points
+# */
+sns.set_style("darkgrid")
+a = round(len(CLR)*random.random())
+b = round(len(CLR)*random.random())
+c = round(len(CLR)*random.random())
+d = round(len(CLR)*random.random())
+e = round(len(CLR)*random.random())
+f = round(len(CLR)*random.random())
+g = round(len(CLR)*random.random())
+h = round(len(CLR)*random.random())
+i = round(len(CLR)*random.random())
+j = round(len(CLR)*random.random())
+plt.figure(figsize = (8,4), dpi =500)
+g = sns.stripplot(x = df['_Brain_sign'][idx_acc],
+                      y = df['On_ACC'][idx_acc].astype(float),
+                      data = df,
+                      edgecolor='white',
+                      size=10,
+                      alpha = .65,
+                      palette=[CLR[a][1].hex_format(),CLR[b][1].hex_format(),
+                               CLR[c][1].hex_format(),CLR[d][1].hex_format(),
+                               CLR[e][1].hex_format(),CLR[f][1].hex_format(),
+                               CLR[g][1].hex_format(),CLR[h][1].hex_format(),
+                               CLR[i][1].hex_format(),CLR[j][1].hex_format(),])  
+# g.set_xticklabels(['Operant\nConditioning', 'Operant Conditioning\n& Selective Attention',
+#                    'Selective\nAttention'])
+# sns.set(font_scale = 1)
+plt.title("Accuracy distribution for Brain Signals")
+plt.ylabel("Accuracy [%]")
+plt.xlabel("")
 plt.show()
-
-
-
-
-plt.figure(figsize = (5,6), dpi =300)
-sns.violinplot(x = df['_Div_input'][idx_acc], y = df['On_ACC'][idx_acc].astype(float), 
-               split = False, data = df, scale="count", inner="stick")
+#/**
+# * Diversity of Role of Operation points
+# */
+sns.set_style("darkgrid")
+a = round(len(CLR)*random.random())
+b = round(len(CLR)*random.random())
+c = round(len(CLR)*random.random())
+d = round(len(CLR)*random.random())
+e = round(len(CLR)*random.random())
+f = round(len(CLR)*random.random())
+g = round(len(CLR)*random.random())
+h = round(len(CLR)*random.random())
+i = round(len(CLR)*random.random())
+j = round(len(CLR)*random.random())
+plt.figure(figsize = (8,4), dpi =500)
+g = sns.stripplot(x = df['_Role_op'][idx_acc],
+                      y = df['On_ACC'][idx_acc].astype(float),
+                      data = df,
+                      edgecolor='white',
+                      size=10,
+                      alpha = .65,
+                      palette=[CLR[a][1].hex_format(),CLR[b][1].hex_format(),
+                               CLR[c][1].hex_format(),CLR[d][1].hex_format(),
+                               CLR[e][1].hex_format(),CLR[f][1].hex_format(),
+                               CLR[g][1].hex_format(),CLR[h][1].hex_format(),
+                               CLR[i][1].hex_format(),CLR[j][1].hex_format(),])  
+# g.set_xticklabels(['Operant\nConditioning', 'Operant Conditioning\n& Selective Attention',
+#                    'Selective\nAttention'])
+# sns.set(font_scale = 1)
+plt.title("Accuracy distribution for Role of Operation")
+plt.ylabel("Accuracy [%]")
+plt.xlabel("")
 plt.show()
+'''
+###############################################################################
+################################## Pie plot ###################################
+############################################################################### 
+#/**
+# * Brain signal
+# */
+offset = 10
+main_lbl   = ['SSEP', 'ERP', 'SMR', 'µ-rhythm', 'SCP']
+main_sizes = [comb_parad[i,i] for i in range(len(comb_parad))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(comb_parad))]
+main_explode = 0*np.ones(len(main_lbl))
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
 
+sub_lbl = ['ERP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #SSEP
+           'SSEP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #ERP
+           'SSEP', 'ERP', 'µ-rhythm', 'SCP', 'self',    #SMR
+           'SSEP', 'ERP', 'SMR', 'SCP', 'self',         #µ-rhythm
+           'SSEP', 'ERP', 'SMR', 'µ-rhythm', 'self']    #SCP
 
+sub_size = [comb_parad[a,b] for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
+sub_colors = [CLR[b+offset][1].hex_format() if b<5 else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
+sub_explode = 0*np.ones(len(sub_size))
 
-plt.figure(figsize = (10,6), dpi =300)
-sns.violinplot(x = df['Control'][idx_acc], y = df['On_ACC'][idx_acc].astype(float), 
-               split = False, data = df, scale="count", inner="stick", palette="flare")
+# Plot
+plt.figure(figsize = (4,4), dpi =500)
+plt.title("Percentage of Paradigms\n", loc = 'center')
+plt.pie(main_sizes,
+        labels = main_lbl,
+        colors = main_colors,
+        startangle = 90,
+        frame = True,
+        textprops={"fontsize": 8},
+        explode = main_explode)
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = 90,
+        explode = sub_explode)
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+
+plt.axis('equal')
+plt.tight_layout()
+plt.legend(main_perc_lbl,
+          title="Legend",
+          loc="lower left",
+          bbox_to_anchor=(1, 0, 0.5, 1))
+
 plt.show()
+#/**
+# * Diversity of Input
+# */
+offset = 50
+main_lbl   = ['Heterogeneous', 'Homogeneous']
+main_sizes = [sum(x) for x in comb_div_input]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(comb_div_input))]
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
 
+sub_lbl = ['Single-Brain Approach', 'Multi-Brain Approach',
+         'Multi-Physiological', 'External Input']
+sub_size = comb_div_input.reshape(4).tolist()
+sub_colors = [CLR[2+a+offset][1].hex_format() for a in range(len(sub_size))]
+for c, elem in enumerate(sub_size):
+    main_perc_lbl.append(sub_lbl[c] + ": " + "{:.2f}%".format((elem/main_sizes[int(np.floor(c/2))])*100))
+
+# Plot
+plt.figure(figsize = (4,4), dpi =500)
+plt.title("Percentage of Diversity of Input\n", loc = 'center')
+plt.pie(main_sizes,
+        labels = main_lbl,
+        colors = main_colors,
+        startangle = -45,
+        frame = True,
+        textprops={"fontsize": 8})
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = -45,
+        labeldistance = 0.5)
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+
+plt.axis('equal')
+plt.tight_layout()
+plt.legend(main_perc_lbl,
+          title="Legend",
+          loc="lower left",
+          bbox_to_anchor=(1, 0, 0.5, 1))
+
+plt.show()
+#/**
+# * Stimulus modalities
+# */
+offset = 10
+main_lbl   = ['Visual', 'Tactile', 'Operant', 'µ-Auditory']
+main_sizes = [comb_parad[i,i] for i in range(len(comb_parad))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(comb_parad))]
+main_explode = 0*np.ones(len(main_lbl))
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+
+sub_lbl = ['ERP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #SSEP
+           'SSEP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #ERP
+           'SSEP', 'ERP', 'µ-rhythm', 'SCP', 'self',    #SMR
+           'SSEP', 'ERP', 'SMR', 'SCP', 'self',         #µ-rhythm
+           'SSEP', 'ERP', 'SMR', 'µ-rhythm', 'self']    #SCP
+
+sub_size = [comb_parad[a,b] for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
+sub_colors = [CLR[b+offset][1].hex_format() if b<5 else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
+sub_explode = 0*np.ones(len(sub_size))
+
+# Plot
+plt.figure(figsize = (4,4), dpi =500)
+plt.title("Percentage of Paradigms\n", loc = 'center')
+plt.pie(main_sizes,
+        labels = main_lbl,
+        colors = main_colors,
+        startangle = 90,
+        frame = True,
+        textprops={"fontsize": 8},
+        explode = main_explode)
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = 90,
+        explode = sub_explode)
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+
+plt.axis('equal')
+plt.tight_layout()
+plt.legend(main_perc_lbl,
+          title="Legend",
+          loc="lower left",
+          bbox_to_anchor=(1, 0, 0.5, 1))
+
+plt.show()
