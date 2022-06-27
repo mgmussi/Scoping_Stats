@@ -68,6 +68,7 @@ for value in np.array(df['_Div_input_sp']):
         comb_div_input[idx_1['Homogeneous'], idx_2[value]%2] += 1
     else:
         comb_div_input[idx_1['Heterogeneous'], idx_2[value]%2] += 1
+print(comb_div_input)
         
 ##Combination of Simtuli Modalities
 comb_stim_mod = np.zeros([4,5]).astype(int)
@@ -76,11 +77,18 @@ for value in np.array(df['_Stim_mod']):
     str_array = value.split(',')
     for a, b in itertools.product(str_array, repeat = 2):
         comb_stim_mod[idx[a],idx[b]] += 1
-for c,x in enumerate(comb_parad):
+for c,x in enumerate(comb_stim_mod):
     comb_stim_mod[c,4] = (comb_stim_mod[c,c]*2) - sum(comb_stim_mod[c])
 # comb_parad[3,2] = 0 #since all mu paradigms have SMR,
 # comb_parad[3,5] = 1 #I'll disconsider them and explain on the paper
 print(comb_stim_mod)
+
+##Number of Role of Operation
+comb_role_op = np.zeros([3]).astype(int)
+idx = {'Simultaneous':0, 'Sequential':1, 'Simultaneous,Sequential':2}
+for value in np.array(df['_Role_op']):
+    comb_role_op[idx[value]] += 1
+print(comb_role_op)
 
 idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
 idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
@@ -345,10 +353,18 @@ plt.show()
 #/**
 # * Brain signal
 # */
+main_lbl = []
+main_sizes = []
+main_colors = []
+data = comb_parad
+ln = len(data[0])
+lnn = ln - 1
+
+
 offset = 10
 main_lbl   = ['SSEP', 'ERP', 'SMR', 'µ-rhythm', 'SCP']
-main_sizes = [comb_parad[i,i] for i in range(len(comb_parad))]
-main_colors= [CLR[i+offset][1].hex_format() for i in range(len(comb_parad))]
+main_sizes = [data[i,i] for i in range(len(data))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
@@ -360,8 +376,8 @@ sub_lbl = ['ERP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #SSEP
            'SSEP', 'ERP', 'SMR', 'SCP', 'self',         #µ-rhythm
            'SSEP', 'ERP', 'SMR', 'µ-rhythm', 'self']    #SCP
 
-sub_size = [comb_parad[a,b] for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
-sub_colors = [CLR[b+offset][1].hex_format() if b<5 else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
+sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
+sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
 sub_explode = 0*np.ones(len(sub_size))
 
 # Plot
@@ -394,17 +410,24 @@ plt.show()
 #/**
 # * Diversity of Input
 # */
+main_lbl = []
+main_sizes = []
+main_colors = []
+data = comb_div_input
+ln = len(data[0])
+lnn = ln - 1
+
 offset = 50
 main_lbl   = ['Heterogeneous', 'Homogeneous']
-main_sizes = [sum(x) for x in comb_div_input]
-main_colors= [CLR[i+offset][1].hex_format() for i in range(len(comb_div_input))]
+main_sizes = [sum(x) for x in data]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
     main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
 
 sub_lbl = ['Single-Brain Approach', 'Multi-Brain Approach',
          'Multi-Physiological', 'External Input']
-sub_size = comb_div_input.reshape(4).tolist()
+sub_size = data.reshape(4).tolist()
 sub_colors = [CLR[2+a+offset][1].hex_format() for a in range(len(sub_size))]
 for c, elem in enumerate(sub_size):
     main_perc_lbl.append(sub_lbl[c] + ": " + "{:.2f}%".format((elem/main_sizes[int(np.floor(c/2))])*100))
@@ -438,10 +461,17 @@ plt.show()
 #/**
 # * Stimulus modalities
 # */
+main_lbl = []
+main_sizes = []
+main_colors = []
+data = comb_stim_mod
+ln = len(data[0])
+lnn = ln - 1
+
 offset = 10
-main_lbl   = ['Visual', 'Tactile', 'Operant', 'µ-Auditory']
-main_sizes = [comb_parad[i,i] for i in range(len(comb_parad))]
-main_colors= [CLR[i+offset][1].hex_format() for i in range(len(comb_parad))]
+main_lbl   = ['Visual', 'Tactile', 'Operant', 'Auditory']
+main_sizes = [data[i,i] for i in range(len(data))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
@@ -453,13 +483,13 @@ sub_lbl = ['ERP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #SSEP
            'SSEP', 'ERP', 'SMR', 'SCP', 'self',         #µ-rhythm
            'SSEP', 'ERP', 'SMR', 'µ-rhythm', 'self']    #SCP
 
-sub_size = [comb_parad[a,b] for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
-sub_colors = [CLR[b+offset][1].hex_format() if b<5 else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(6), repeat = 2) if a!=b and a<5]
+sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
+sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
 sub_explode = 0*np.ones(len(sub_size))
 
 # Plot
 plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Paradigms\n", loc = 'center')
+plt.title("Percentage of Stimulus Modalities\n", loc = 'center')
 plt.pie(main_sizes,
         labels = main_lbl,
         colors = main_colors,
