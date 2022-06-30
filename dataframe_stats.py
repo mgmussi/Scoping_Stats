@@ -29,6 +29,39 @@ pd.set_option('display.max_columns', None)
 # print(df['ID'].values)
 # print(df['On_ACC'].values)
 
+###############################################################################
+######################## COUNT NUM OF TAXONOMIC SYSTEMS #######################
+###############################################################################
+tot_sys = int(sum(df['UN_SYS'].values))
+tot_div_in = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input'] == 'Heterogeneous' and int(row['UN_SYS']))])),
+              int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input'] == 'Homogeneous' and int(row['UN_SYS']))]))]
+tot_div_ins = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'External Input' and int(row['UN_SYS']))])),
+               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'Multi-Brain Approach' and int(row['UN_SYS']))])),
+               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'Multi-Physiological' and int(row['UN_SYS']))])),
+               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'Single-Brain Approach' and int(row['UN_SYS']))]))]
+tot_men_str = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mental_str'] == 'Selective Attention' and int(row['UN_SYS']))])),
+               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mental_str'] == 'Operant Conditioning' and int(row['UN_SYS']))])),
+               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mental_str'] == 'Operant Conditioning,Selective Attention' and int(row['UN_SYS']))]))]
+tot_rol_op = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Role_op'] == 'Sequential' and int(row['UN_SYS']))])),
+              int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Role_op'] == 'Simultaneous' and int(row['UN_SYS']))]))]
+tot_mod_op = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mode_op'] == 'Synchronous' and int(row['UN_SYS']))])),
+              int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mode_op'] == 'Asynchronous' and int(row['UN_SYS']))]))]
+b_s = []
+s_m = []
+for _, row in df.iterrows():
+    temp1 = row['_Brain_sign']
+    temp2 = row['_Stim_mod']
+    if not(any(temp1 in b for b in b_s)): b_s.append(temp1)
+    if not(any(temp2 in s for s in s_m)): s_m.append(temp2)
+    
+tot_br_mode = []
+tot_st_mode = []
+for brain, stim in zip(b_s, s_m):
+    tot_br_mode.append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Brain_sign'] == brain and int(row['UN_SYS']))])))
+    tot_st_mode.append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Stim_mod'] == stim and int(row['UN_SYS']))])))
+###############################################################################
+############################ FIND RELEVANT INDEXES ############################
+###############################################################################
 idx = (df['On_ACC'].values != '-')
 idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
 idx_age = [counter for counter, value in enumerate(np.array(df['Pop_age'])) if value != '-']
@@ -43,8 +76,16 @@ idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str']
 idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
              [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
              [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning & Selective Attention']]
-
-
+idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
+idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
+idx_age_single = list(set.intersection(set(idx_age), set(idx_age_), set(idx_acc)))
+idx_age_range = list(set.intersection(set(idx_age), set(idx_age_to_), set(idx_acc)))
+idx_sel_acc = list(set.intersection(set(idx_MeStr[0]), set(idx_acc)))
+idx_opr_acc = list(set.intersection(set(idx_MeStr[1]), set(idx_acc)))
+idx_sel_opr_acc = list(set.intersection(set(idx_MeStr[2]), set(idx_acc)))
+###############################################################################
+############################ PIE PLOT COMBINATIONS ############################
+###############################################################################
 ##Combination of Brain Signals
 comb_parad = np.zeros([5,6]).astype(int)
 idx = {'SSEP':0, 'ERP':1, 'SMR':2, 'mu':3, 'SCP':4}
@@ -89,14 +130,6 @@ idx = {'Simultaneous':0, 'Sequential':1, 'Simultaneous,Sequential':2}
 for value in np.array(df['_Role_op']):
     comb_role_op[idx[value]] += 1
 print(comb_role_op)
-
-idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
-idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
-idx_age_single = list(set.intersection(set(idx_age), set(idx_age_), set(idx_acc)))
-idx_age_range = list(set.intersection(set(idx_age), set(idx_age_to_), set(idx_acc)))
-idx_sel_acc = list(set.intersection(set(idx_MeStr[0]), set(idx_acc)))
-idx_opr_acc = list(set.intersection(set(idx_MeStr[1]), set(idx_acc)))
-idx_sel_opr_acc = list(set.intersection(set(idx_MeStr[2]), set(idx_acc)))
 ###############################################################################
 ################################## FUNCTIONS ##################################
 ###############################################################################
