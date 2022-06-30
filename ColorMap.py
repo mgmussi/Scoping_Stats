@@ -1129,3 +1129,5 @@ items = list(colors.items())
 # random.shuffle(items)
 colors = OrderedDict(items)
 
+if __name__ == "__main__":
+    CLR = return_palette_list(colors)

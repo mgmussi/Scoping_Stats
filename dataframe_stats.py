@@ -14,11 +14,11 @@ import pandas as pd
 import os
 import random
 import itertools
+import sys
 
 
-execfile("ColorMap.py")
-CLR = return_palette_list(colors)
-
+# execfile("ColorMap.py")
+exec(open("ColorMap.py").read())
 sns.set_style("darkgrid")
 
 cwd = os.getcwd()+'/__Dataframe_ScopingReview.xlsx'
@@ -59,6 +59,25 @@ tot_st_mode = []
 for brain, stim in zip(b_s, s_m):
     tot_br_mode.append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Brain_sign'] == brain and int(row['UN_SYS']))])))
     tot_st_mode.append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Stim_mod'] == stim and int(row['UN_SYS']))])))
+
+def pt(val):
+    return(float(val/tot_sys*100))
+
+def ptp(ls):
+    perc = []
+    for it in ls:
+        perc.append(float(it/sum(ls)*100))
+    return perc
+
+def pr_v(vals, ct_str):
+    _ptps = ptp(vals)
+    for val, ct, _ptp in zip(vals, ct_str, _ptps):
+        print(">> {} ({:.2f}% - {:.2f}%): {}".format(val, pt(val), _ptp, ct))
+
+print(">> {0}: TOTAL NUMBER OF SYSTEMS".format(tot_sys))
+pr_v(tot_div_in, ["HETEROGENEOUS", "HOMOGENEOUS"])
+...
+
 ###############################################################################
 ############################ FIND RELEVANT INDEXES ############################
 ###############################################################################
