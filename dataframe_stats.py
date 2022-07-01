@@ -33,32 +33,29 @@ pd.set_option('display.max_columns', None)
 ######################## COUNT NUM OF TAXONOMIC SYSTEMS #######################
 ###############################################################################
 tot_sys = int(sum(df['UN_SYS'].values))
-tot_div_in = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input'] == 'Heterogeneous' and int(row['UN_SYS']))])),
-              int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input'] == 'Homogeneous' and int(row['UN_SYS']))]))]
-tot_div_ins = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'External Input' and int(row['UN_SYS']))])),
-               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'Multi-Brain Approach' and int(row['UN_SYS']))])),
-               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'Multi-Physiological' and int(row['UN_SYS']))])),
-               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Div_input_sp'] == 'Single-Brain Approach' and int(row['UN_SYS']))]))]
-tot_men_str = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mental_str'] == 'Selective Attention' and int(row['UN_SYS']))])),
-               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mental_str'] == 'Operant Conditioning' and int(row['UN_SYS']))])),
-               int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mental_str'] == 'Operant Conditioning,Selective Attention' and int(row['UN_SYS']))]))]
-tot_rol_op = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Role_op'] == 'Sequential' and int(row['UN_SYS']))])),
-              int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Role_op'] == 'Simultaneous' and int(row['UN_SYS']))]))]
-tot_mod_op = [int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mode_op'] == 'Synchronous' and int(row['UN_SYS']))])),
-              int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Mode_op'] == 'Asynchronous' and int(row['UN_SYS']))]))]
-b_s = []
-s_m = []
-for _, row in df.iterrows():
-    temp1 = row['_Brain_sign']
-    temp2 = row['_Stim_mod']
-    if not(any(temp1 in b for b in b_s)): b_s.append(temp1)
-    if not(any(temp2 in s for s in s_m)): s_m.append(temp2)
+
+#Lists of rows
+names_lbls = ["_Div_input", "_Div_input_sp", "_Mental_str", "_Role_op",
+              "_Mode_op", "_Brain_sign", "_Stim_mod"]
+#Empty lists of lists for features names and counted values
+names_feat = [[] for _ in range(len(names_lbls))]
+total_feat = [[] for _ in range(len(names_lbls))]
+
+for i, name in enumerate(names_lbls):
+    #for every row extract data from the column
+    #and append to the list of features if is its
+    #first appearence
+    for _, row in df.iterrows(): 
+        temp = row[name]        
+        # <<<< solve problem with any
+        # <<<< indiv names are being found in compounded (indiv,indiv)
+        #https://note.nkmk.me/en/python-str-compare/#:~:text=re.fullmatch()-,Exact%20match%20(equality%20comparison)%3A%20%3D%3D%20%2C%20!%3D,are%20not%2C%20False%20is%20returned.&text=It%20is%20case%2Dsensitive%2C%20and,by%20other%20operators%20and%20methods.
+        if not(any(temp in n for n in names_feat[i])): names_feat[i].append(temp)
+        print(temp)
     
-tot_br_mode = []
-tot_st_mode = []
-for brain, stim in zip(b_s, s_m):
-    tot_br_mode.append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Brain_sign'] == brain and int(row['UN_SYS']))])))
-    tot_st_mode.append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row['_Stim_mod'] == stim and int(row['UN_SYS']))])))
+    #for every feature name, count how many
+    for f in names_feat[i]:
+        total_feat[i].append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row[name] == f and int(row['UN_SYS']))])))
 
 def pt(val):
     return(float(val/tot_sys*100))
@@ -71,13 +68,16 @@ def ptp(ls):
 
 def pr_v(vals, ct_str):
     _ptps = ptp(vals)
+    tots = 0
     for val, ct, _ptp in zip(vals, ct_str, _ptps):
-        print(">> {} ({:.2f}% - {:.2f}%): {}".format(val, pt(val), _ptp, ct))
+        print(">> {:2d}: ({:.2f}% - {:.2f}%) {}".format(val, pt(val), _ptp, ct))
+        tots += val
+    print("<> {}: Sum".format(tots))
 
-print(">> {0}: TOTAL NUMBER OF SYSTEMS".format(tot_sys))
-pr_v(tot_div_in, ["HETEROGENEOUS", "HOMOGENEOUS"])
-...
-
+print("------------\n>> {0}: TOTAL NUMBER OF SYSTEMS\n".format(tot_sys))
+for tots, names in zip(total_feat, names_feat):
+    pr_v(tots, names)
+    print()
 ###############################################################################
 ############################ FIND RELEVANT INDEXES ############################
 ###############################################################################
