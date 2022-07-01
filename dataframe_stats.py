@@ -14,7 +14,7 @@ import pandas as pd
 import os
 import random
 import itertools
-import sys
+import re
 
 
 # execfile("ColorMap.py")
@@ -50,8 +50,12 @@ for i, name in enumerate(names_lbls):
         # <<<< solve problem with any
         # <<<< indiv names are being found in compounded (indiv,indiv)
         #https://note.nkmk.me/en/python-str-compare/#:~:text=re.fullmatch()-,Exact%20match%20(equality%20comparison)%3A%20%3D%3D%20%2C%20!%3D,are%20not%2C%20False%20is%20returned.&text=It%20is%20case%2Dsensitive%2C%20and,by%20other%20operators%20and%20methods.
-        if not(any(temp in n for n in names_feat[i])): names_feat[i].append(temp)
+        # if not(any(temp in n for n in names_feat[i])): names_feat[i].append(temp)
+        # print(temp)
+        
+        if not(any(re.fullmatch(temp, n) for n in names_feat[i])): names_feat[i].append(temp)
         print(temp)
+        
     
     #for every feature name, count how many
     for f in names_feat[i]:
@@ -67,12 +71,11 @@ def ptp(ls):
     return perc
 
 def pr_v(vals, ct_str):
-    _ptps = ptp(vals)
     tots = 0
-    for val, ct, _ptp in zip(vals, ct_str, _ptps):
-        print(">> {:2d}: ({:.2f}% - {:.2f}%) {}".format(val, pt(val), _ptp, ct))
+    for val, ct in zip(vals, ct_str):
+        print(">> {:2d}: ({:.2f}%) {}".format(val, pt(val), ct))
         tots += val
-    print("<> {}: Sum".format(tots))
+    print("<< {}: Sum>>".format(tots))
 
 print("------------\n>> {0}: TOTAL NUMBER OF SYSTEMS\n".format(tot_sys))
 for tots, names in zip(total_feat, names_feat):
