@@ -47,16 +47,7 @@ for i, name in enumerate(names_lbls):
     #first appearence
     for _, row in df.iterrows(): 
         temp = row[name]        
-        # <<<< solve problem with any
-        # <<<< indiv names are being found in compounded (indiv,indiv)
-        #https://note.nkmk.me/en/python-str-compare/#:~:text=re.fullmatch()-,Exact%20match%20(equality%20comparison)%3A%20%3D%3D%20%2C%20!%3D,are%20not%2C%20False%20is%20returned.&text=It%20is%20case%2Dsensitive%2C%20and,by%20other%20operators%20and%20methods.
-        # if not(any(temp in n for n in names_feat[i])): names_feat[i].append(temp)
-        # print(temp)
-        
         if not(any(re.fullmatch(temp, n) for n in names_feat[i])): names_feat[i].append(temp)
-        print(temp)
-        
-    
     #for every feature name, count how many
     for f in names_feat[i]:
         total_feat[i].append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row[name] == f and int(row['UN_SYS']))])))
@@ -75,7 +66,7 @@ def pr_v(vals, ct_str):
     for val, ct in zip(vals, ct_str):
         print(">> {:2d}: ({:.2f}%) {}".format(val, pt(val), ct))
         tots += val
-    print("<< {}: Sum>>".format(tots))
+    # print("<< {}: Sum>>".format(tots))
 
 print("------------\n>> {0}: TOTAL NUMBER OF SYSTEMS\n".format(tot_sys))
 for tots, names in zip(total_feat, names_feat):
@@ -94,10 +85,10 @@ idx_DivIn = [[counter for counter, value in enumerate(np.array(df['_Div_input'])
              [counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Homogeneous']]
 idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
              [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
-             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning & Selective Attention']]
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning,Selective Attention']]
 idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
              [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
-             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning & Selective Attention']]
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning,Selective Attention']]
 idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
 idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
 idx_age_single = list(set.intersection(set(idx_age), set(idx_age_), set(idx_acc)))
@@ -111,14 +102,15 @@ idx_sel_opr_acc = list(set.intersection(set(idx_MeStr[2]), set(idx_acc)))
 ##Combination of Brain Signals
 comb_parad = np.zeros([5,6]).astype(int)
 idx = {'SSEP':0, 'ERP':1, 'SMR':2, 'mu':3, 'SCP':4}
-for value in np.array(df['_Brain_sign']):
-    str_array = value.split(',')
-    for a, b in itertools.product(str_array, repeat = 2):
-        comb_parad[idx[a],idx[b]] += 1
+for _, row in df.iterrows():
+    if row['UN_SYS']:
+        str_array = row['_Brain_sign'].split(',')
+        for a, b in itertools.product(str_array, repeat = 2):
+            comb_parad[idx[a],idx[b]] += 1
 for c,x in enumerate(comb_parad):
     comb_parad[c,5] = (comb_parad[c,c]*2) - sum(comb_parad[c])
 comb_parad[3,2] = 0 #since all mu paradigms have SMR,
-comb_parad[3,5] = 1 #I'll disconsider them and explain on the paper
+comb_parad[3,5] = 2 #I'll disconsider them and explain on the paper
 print(comb_parad)
 
 ##Number of Div of Input
@@ -126,31 +118,36 @@ comb_div_input = np.zeros([2,2]).astype(int)
 idx_1 = {'Homogeneous':0, 'Heterogeneous':1}
 idx_2 = {'Single-Brain Approach':0, 'Multi-Brain Approach':1,
          'Multi-Physiological':2, 'External Input':3}
-for value in np.array(df['_Div_input_sp']):
-    if(idx_2[value]<2):
-        comb_div_input[idx_1['Homogeneous'], idx_2[value]%2] += 1
-    else:
-        comb_div_input[idx_1['Heterogeneous'], idx_2[value]%2] += 1
+for _, row in df.iterrows():
+    if row['UN_SYS']:
+        value = row['_Div_input_sp']
+        if(idx_2[value]<2):
+            comb_div_input[idx_1['Homogeneous'], idx_2[value]%2] += 1
+        else:
+            comb_div_input[idx_1['Heterogeneous'], idx_2[value]%2] += 1
 print(comb_div_input)
         
 ##Combination of Simtuli Modalities
 comb_stim_mod = np.zeros([4,5]).astype(int)
 idx = {'Visual':0, 'Tactile':1, 'Operant':2, 'Auditory':3}
-for value in np.array(df['_Stim_mod']):
-    str_array = value.split(',')
-    for a, b in itertools.product(str_array, repeat = 2):
-        comb_stim_mod[idx[a],idx[b]] += 1
+# for value in np.array(df['_Stim_mod']):
+for _, row in df.iterrows():
+    if row['UN_SYS']:
+        str_array = row['_Stim_mod'].split(',')
+        for a, b in itertools.product(str_array, repeat = 2):
+            comb_stim_mod[idx[a],idx[b]] += 1
 for c,x in enumerate(comb_stim_mod):
     comb_stim_mod[c,4] = (comb_stim_mod[c,c]*2) - sum(comb_stim_mod[c])
-# comb_parad[3,2] = 0 #since all mu paradigms have SMR,
-# comb_parad[3,5] = 1 #I'll disconsider them and explain on the paper
 print(comb_stim_mod)
 
 ##Number of Role of Operation
 comb_role_op = np.zeros([3]).astype(int)
 idx = {'Simultaneous':0, 'Sequential':1, 'Simultaneous,Sequential':2}
-for value in np.array(df['_Role_op']):
-    comb_role_op[idx[value]] += 1
+# for value in np.array(df['_Role_op']):
+for _, row in df.iterrows():
+    if row['UN_SYS']:
+        value = row['_Role_op']
+        comb_role_op[idx[value]] += 1
 print(comb_role_op)
 ###############################################################################
 ################################## FUNCTIONS ##################################
@@ -207,20 +204,20 @@ sns.set_style("whitegrid")
 plt.figure(figsize = (5,7), dpi =500)
 c = 1
 for _range in idx_age_range:
-    a = random.random()
+    a = 1.1*random.random()
     txt =  str(df['Pop_age'][_range])
     val1 = float(txt[0:df['Pop_age'][_range].index(' to ')] )
     val2 = float(txt[df['Pop_age'][_range].index(' to ') + 4:])
     plt.plot([val1, val2], [df['On_ACC'][_range], df['On_ACC'][_range]],
              '-', color = CLR[_range][1].hex_format(), linewidth = 3,
              alpha = 0.6)
-    if c%2 != 0:
+    if c%2 != 1:
         plt.annotate(str(c), (val2, df['On_ACC'][_range]),
-                     textcoords = "offset points", xytext = (3*(1+(1-a)),-1), ha = 'left',
+                     textcoords = "offset points", xytext = (3.5*(1+(1-a)),-1), ha = 'left',
                      fontsize = 4)
     else:
         plt.annotate(str(c), (val1, df['On_ACC'][_range]),
-                     textcoords = "offset points", xytext = (-3*(1+(1-a)),-1), ha = 'right',
+                     textcoords = "offset points", xytext = (-3.5*(1+(1-a)),-1), ha = 'right',
                      fontsize = 4)
     c += 1
 plt.legend(cite_lbl(idx_age_range), fontsize = 3.9, loc = "lower right")
@@ -243,9 +240,50 @@ for _range in idx_age_single:
                  textcoords = "offset points", xytext = (2,-1), ha = 'left',
                  fontsize = 4)
     
-plt.title("Age range vs. Accuracy")
-plt.ylabel("Accuracy [%]")
-plt.xlabel("Age [years]")
+plt.title("Age range vs. Accuracy", fontsize = 8)
+plt.ylabel("Accuracy [%]", fontsize = 6)
+plt.xlabel("Age [years]", fontsize = 6)
+# plt.yscale("log")
+plt.tick_params(size = 1, labelsize = 6)
+plt.show()
+#/**
+# * Age ranges overlap
+# */
+sns.set_style("whitegrid")
+fig, ax = plt.subplots(figsize = (8,1.2), dpi =500)
+c = 1
+for _range in idx_age_range:
+    a = 1.1*random.random()
+    txt =  str(df['Pop_age'][_range])
+    val1 = float(txt[0:df['Pop_age'][_range].index(' to ')] )
+    val2 = float(txt[df['Pop_age'][_range].index(' to ') + 4:])
+    plt.plot([val1, val2], [1, 1],
+             '-',
+             color = 'k',
+             linewidth = 15,
+             alpha = 0.1)
+plt.title("Age ranges overlap", fontsize = 10)
+plt.ylabel("", fontsize = 6)
+plt.xlabel("Age [years]", fontsize = 9)
+# plt.yscale("log")
+plt.tick_params(size = 1, labelsize = 9)
+plt.grid()
+# plt.axis("off")
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+plt.tick_params(
+    axis='both',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    bottom=False,      # ticks along the bottom edge are off
+    top=False,         # ticks along the top edge are off
+    # labelbottom=False, # labels along the bottom edge are off
+    left=False,
+    right=False,
+    labelleft=False)
+plt.ylim(0.999,1.001)
+plt.tight_layout()
 plt.show()
 ###############################################################################
 ################################# Violin plot #################################
@@ -523,7 +561,7 @@ data = comb_stim_mod
 ln = len(data[0])
 lnn = ln - 1
 
-offset = 10
+offset = 85
 main_lbl   = ['Visual', 'Tactile', 'Operant', 'Auditory']
 main_sizes = [data[i,i] for i in range(len(data))]
 main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
@@ -532,11 +570,6 @@ main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
     main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
 
-sub_lbl = ['ERP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #SSEP
-           'SSEP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #ERP
-           'SSEP', 'ERP', 'µ-rhythm', 'SCP', 'self',    #SMR
-           'SSEP', 'ERP', 'SMR', 'SCP', 'self',         #µ-rhythm
-           'SSEP', 'ERP', 'SMR', 'µ-rhythm', 'self']    #SCP
 
 sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
 sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
