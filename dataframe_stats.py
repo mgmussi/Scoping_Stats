@@ -198,6 +198,47 @@ graph.set_ylabel("Accuracy [%]")
 plt.show()
 '''
 ###############################################################################
+######################## Point plot acc per Role of Op ########################
+###############################################################################
+sns.set_style("darkgrid")
+plt.figure(figsize = (5,4), dpi =300)
+# graph = sns.stripplot(x = df['_Role_op'][idx_acc], y = df['On_ACC'][idx_acc].astype(float),
+#               data = df, edgecolor='gray', size=12.5, alpha = .65, palette='Set2')    
+graph = sns.boxplot(x = df['_Role_op'][idx_acc],
+                    y = df['On_ACC'][idx_acc].astype(float),
+                    data = df,
+                    # edgecolor='gray',
+                    # size=12.5,
+                    # alpha = .65,
+                    palette='Set2')   
+# sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
+graph.set_title("Accuracy per Role of Operation")
+graph.set_ylabel("Accuracy [%]")
+graph.set_xlabel("Role of Operation")
+graph.set_xticklabels(["Sequential", "Simultaneous", "Simultaneous &\nSequential"])
+plt.show()
+
+
+sns.set_style("darkgrid")
+plt.figure(figsize = (10,4), dpi =300)
+# graph = sns.stripplot(x = df['_Role_op'][idx_acc], y = df['On_ACC'][idx_acc].astype(float),
+#               data = df, edgecolor='gray', size=12.5, alpha = .65, palette='Set2')    
+graph = sns.boxplot(x = df['_Stim_mod'][idx_acc],
+                    y = df['On_ACC'][idx_acc].astype(float),
+                    data = df,
+                    # edgecolor='gray',
+                    # size=12.5,
+                    # alpha = .65,
+                    palette='Set2')   
+# sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
+graph.set_title("Accuracy per Role of Operation")
+graph.set_ylabel("Accuracy [%]")
+graph.set_xlabel("\nRole of Operation")
+graph.set_xticklabels(["Visual &\nOperant", "Visual", "Visual &\nAuditory",
+                       "Operant", "Visual,\nOperant &\nAuditory", "Auditory",
+                       "Operant &\nTactile", "Tactile"])
+plt.show()
+###############################################################################
 ########################### Plot age range vs. acc ############################
 ###############################################################################
 sns.set_style("whitegrid")
