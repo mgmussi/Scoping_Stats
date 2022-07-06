@@ -23,6 +23,7 @@ sns.set_style("darkgrid")
 
 cwd = os.getcwd()+'/__Dataframe_ScopingReview.xlsx'
 df = pd.read_excel(cwd, sheet_name=1, header=[0])
+dfc = pd.read_excel(cwd, sheet_name=2, header=[0])
 pd.set_option('display.max_rows',20)
 pd.set_option('display.max_columns', None)
 # print(df)
@@ -198,7 +199,34 @@ graph.set_ylabel("Accuracy [%]")
 plt.show()
 '''
 ###############################################################################
-######################## Point plot acc per Role of Op ########################
+################## Point plot & boxplot acc per num commands ##################
+###############################################################################
+sns.set_style("darkgrid")
+plt.figure(figsize = (5,3), dpi =300)
+graph = sns.boxplot(x = dfc['Num_steps_command_max'][idx_acc].astype(int),
+                      y = df['On_ACC'][idx_acc].astype(float),
+                      data = df,
+                      # edgecolor='gray',
+                      # size=12.5,
+                      # alpha = .65,
+                      palette='Set2')
+graph2 = sns.stripplot(x = dfc['Num_steps_command_max'][idx_acc].astype(int),
+                      y = df['On_ACC'][idx_acc].astype(float),
+                      data = df,
+                      marker = 'P',
+                      size = 6,
+                      # alpha = .65,
+                      edgecolor = 'gray',
+                      linewidth = .5,
+                      palette='Set2',
+                      color = 'gray')
+# sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
+graph.set_title("Accuracy per Number of Commands")
+graph.set_ylabel("Accuracy [%]")
+graph.set_xlabel("Maximum number of commands")
+plt.show()
+###############################################################################
+######################### Box plot acc per Role of Op #########################
 ###############################################################################
 sns.set_style("darkgrid")
 plt.figure(figsize = (5,4), dpi =300)
@@ -217,8 +245,9 @@ graph.set_ylabel("Accuracy [%]")
 graph.set_xlabel("Role of Operation")
 graph.set_xticklabels(["Sequential", "Simultaneous", "Simultaneous &\nSequential"])
 plt.show()
-
-
+###############################################################################
+######################### Box plot acc per Stim Modal #########################
+###############################################################################
 sns.set_style("darkgrid")
 plt.figure(figsize = (10,4), dpi =300)
 # graph = sns.stripplot(x = df['_Role_op'][idx_acc], y = df['On_ACC'][idx_acc].astype(float),
@@ -226,17 +255,45 @@ plt.figure(figsize = (10,4), dpi =300)
 graph = sns.boxplot(x = df['_Stim_mod'][idx_acc],
                     y = df['On_ACC'][idx_acc].astype(float),
                     data = df,
+                    order = ["Visual", "Visual,Auditory", "Visual,Operant", 
+                             "Visual,Operant,Auditory", "Operant",
+                             "Auditory", "Operant,Tactile", "Tactile"],
                     # edgecolor='gray',
                     # size=12.5,
                     # alpha = .65,
                     palette='Set2')   
 # sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
-graph.set_title("Accuracy per Role of Operation")
+graph.set_title("Accuracy per Stimulus Modalities")
 graph.set_ylabel("Accuracy [%]")
 graph.set_xlabel("\nRole of Operation")
-graph.set_xticklabels(["Visual &\nOperant", "Visual", "Visual &\nAuditory",
-                       "Operant", "Visual,\nOperant &\nAuditory", "Auditory",
+graph.set_xticklabels(["Visual", "Visual &\nAuditory", "Visual &\nOperant",
+                       "Visual,\nOperant &\nAuditory", "Operant", "Auditory",
                        "Operant &\nTactile", "Tactile"])
+plt.tick_params(size = 1, labelsize = 9)
+plt.show()
+
+
+sns.set_style("darkgrid")
+plt.figure(figsize = (10,4), dpi =300)
+
+graph = sns.boxplot(x = df['Num_commands'][idx_acc],
+                    y = df['On_ACC'][idx_acc].astype(float),
+                    data = df,
+                    # order = ["Visual", "Visual,Auditory", "Visual,Operant", 
+                    #          "Visual,Operant,Auditory", "Operant",
+                    #          "Auditory", "Operant,Tactile", "Tactile"],
+                    # edgecolor='gray',
+                    # size=12.5,
+                    # alpha = .65,
+                    palette='Set2')   
+# sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
+graph.set_title("Accuracy per Number of Targets")
+graph.set_ylabel("Accuracy [%]")
+graph.set_xlabel("\nNumber of Targets")
+# graph.set_xticklabels(["Visual", "Visual &\nAuditory", "Visual &\nOperant",
+#                        "Visual,\nOperant &\nAuditory", "Operant", "Auditory",
+#                        "Operant &\nTactile", "Tactile"])
+plt.tick_params(size = 1, labelsize = 9)
 plt.show()
 ###############################################################################
 ########################### Plot age range vs. acc ############################
