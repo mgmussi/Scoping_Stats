@@ -14,6 +14,15 @@ class RGB(Color):
         '''Returns color in hex format'''
         return '#{:02X}{:02X}{:02X}'.format(self.red,self.green,self.blue)
     
+    def hex_dim(self, n):
+        '''Returns color in hex format'''
+        print(self.hex_format())
+        # temp = int('0x{:02X}{:02X}{:02X}'.format(self.red,self.green,self.blue), 16)>>n
+        temp = int('0x{:02X}{:02X}{:02X}'.format(self.red,self.green,self.blue), 16) - 1118481
+        print(hex(temp))
+        return '#{:02X}'.format(temp)
+        
+    
 def return_palette_list(colors_dic):
     return list(colors_dic.items())
 

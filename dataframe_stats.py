@@ -37,7 +37,7 @@ tot_sys = int(sum(df['UN_SYS'].values))
 
 #Lists of rows
 names_lbls = ["_Div_input", "_Div_input_sp", "_Mental_str", "_Role_op",
-              "_Mode_op", "_Brain_sign", "_Stim_mod"]
+              "_Mode_op", "_Brain_sign", "_Stim_mod", "Control"]
 #Empty lists of lists for features names and counted values
 names_feat = [[] for _ in range(len(names_lbls))]
 total_feat = [[] for _ in range(len(names_lbls))]
@@ -78,6 +78,7 @@ for tots, names in zip(total_feat, names_feat):
 ###############################################################################
 idx = (df['On_ACC'].values != '-')
 idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
+idx_acc2 = [counter for counter, value in enumerate(np.array(dfc['On_ACC'])) if value != '-']
 idx_age = [counter for counter, value in enumerate(np.array(df['Pop_age'])) if value != '-']
 idx_age_to_ = [counter for counter, value in enumerate(np.array(df['Pop_age'].astype(str))) if 'to' in value]
 idx_age_ = [counter for counter, value in enumerate(np.array(df['Pop_age'].astype(str))) if not('to' in value)]
@@ -142,14 +143,24 @@ for c,x in enumerate(comb_stim_mod):
 print(comb_stim_mod)
 
 ##Number of Role of Operation
-comb_role_op = np.zeros([3]).astype(int)
-idx = {'Simultaneous':0, 'Sequential':1, 'Simultaneous,Sequential':2}
+comb_role_op = np.zeros([2]).astype(int)
+idx = {'Simultaneous':0, 'Sequential':1}
 # for value in np.array(df['_Role_op']):
 for _, row in df.iterrows():
     if row['UN_SYS']:
         value = row['_Role_op']
         comb_role_op[idx[value]] += 1
 print(comb_role_op)
+
+##Number of Mode of Operation
+comb_mode_op = np.zeros([3]).astype(int)
+idx = {'Synchronous':0, 'Asynchronous':1, 'Synchronous,Asynchronous':2}
+# for value in np.array(df['_Role_op']):
+for _, row in df.iterrows():
+    if row['UN_SYS']:
+        value = row['_Mode_op']
+        comb_mode_op[idx[value]] += 1
+print(comb_mode_op)
 ###############################################################################
 ################################## FUNCTIONS ##################################
 ###############################################################################
@@ -203,16 +214,16 @@ plt.show()
 ###############################################################################
 sns.set_style("darkgrid")
 plt.figure(figsize = (5,3), dpi =300)
-graph = sns.boxplot(x = dfc['Num_steps_command_max'][idx_acc].astype(int),
-                      y = df['On_ACC'][idx_acc].astype(float),
-                      data = df,
+graph = sns.boxplot(x = dfc['Num_steps_command_max'][idx_acc2].astype(int),
+                      y = dfc['On_ACC'][idx_acc2].astype(float),
+                      data = dfc,
                       # edgecolor='gray',
                       # size=12.5,
                       # alpha = .65,
                       palette='Set2')
-graph2 = sns.stripplot(x = dfc['Num_steps_command_max'][idx_acc].astype(int),
-                      y = df['On_ACC'][idx_acc].astype(float),
-                      data = df,
+graph2 = sns.stripplot(x = dfc['Num_steps_command_max'][idx_acc2].astype(int),
+                      y = dfc['On_ACC'][idx_acc2].astype(float),
+                      data = dfc,
                       marker = 'P',
                       size = 6,
                       # alpha = .65,
@@ -243,7 +254,7 @@ graph = sns.boxplot(x = df['_Role_op'][idx_acc],
 graph.set_title("Accuracy per Role of Operation")
 graph.set_ylabel("Accuracy [%]")
 graph.set_xlabel("Role of Operation")
-graph.set_xticklabels(["Sequential", "Simultaneous", "Simultaneous &\nSequential"])
+graph.set_xticklabels(["Sequential", "Simultaneous"])
 plt.show()
 ###############################################################################
 ######################### Box plot acc per Stim Modal #########################
@@ -572,6 +583,7 @@ sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_f
 sub_explode = 0*np.ones(len(sub_size))
 
 # Plot
+sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
 plt.title("Percentage of Paradigms\n", loc = 'center')
 plt.pie(main_sizes,
@@ -624,6 +636,7 @@ for c, elem in enumerate(sub_size):
     main_perc_lbl.append(sub_lbl[c] + ": " + "{:.2f}%".format((elem/main_sizes[int(np.floor(c/2))])*100))
 
 # Plot
+sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
 plt.title("Percentage of Diversity of Input\n", loc = 'center')
 plt.pie(main_sizes,
@@ -674,6 +687,7 @@ sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_f
 sub_explode = 0*np.ones(len(sub_size))
 
 # Plot
+sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
 plt.title("Percentage of Stimulus Modalities\n", loc = 'center')
 plt.pie(main_sizes,
@@ -700,3 +714,165 @@ plt.legend(main_perc_lbl,
           bbox_to_anchor=(1, 0, 0.5, 1))
 
 plt.show()
+#/**
+# * Role of Operation
+# */
+main_lbl = []
+main_sizes = []
+main_colors = []
+data = comb_role_op
+ln = len(data)
+lnn = ln - 1
+
+offset = 100
+main_lbl   = ['Sequential', 'Simultaneous']
+main_sizes = [data[i] for i in range(len(data))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
+main_explode = 0*np.ones(len(main_lbl))
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+
+
+sub_size = []
+sub_colors = []
+sub_explode = 0*np.ones(len(sub_size))
+
+# Plot
+sns.set_style("whitegrid")
+plt.figure(figsize = (4,4), dpi =500)
+plt.title("Percentage of Roles of Operation\n", loc = 'center')
+plt.pie(main_sizes,
+        labels = main_lbl,
+        colors = main_colors,
+        startangle = -65,
+        frame = True,
+        textprops={"fontsize": 8},
+        explode = main_explode)
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = 0,
+        explode = sub_explode)
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+
+plt.axis('equal')
+plt.tight_layout()
+plt.legend(main_perc_lbl,
+          title="Legend",
+          loc="lower left",
+          bbox_to_anchor=(1, 0, 0.5, 1))
+
+plt.show()
+#/**
+# * Mode of Operation
+# */
+main_lbl = []
+main_sizes = []
+main_colors = []
+data = comb_mode_op
+ln = len(data)
+lnn = ln - 1
+
+offset = 55
+main_lbl   = ['Synchronous', 'Asynchronous', 'Synchronous &\nAsynchronous']
+main_sizes = [data[i] for i in range(len(data))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
+main_explode = 0*np.ones(len(main_lbl))
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+
+
+sub_size = []
+sub_colors = []
+sub_explode = 0*np.ones(len(sub_size))
+
+# Plot
+sns.set_style("whitegrid")
+plt.figure(figsize = (4,4), dpi =500)
+plt.title("Percentage of Modes of Operation\n", loc = 'center')
+plt.pie(main_sizes,
+        labels = main_lbl,
+        colors = main_colors,
+        startangle = 110,
+        frame = True,
+        textprops={"fontsize": 8},
+        explode = main_explode)
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = 0,
+        explode = sub_explode)
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+
+plt.axis('equal')
+plt.tight_layout()
+plt.legend(main_perc_lbl,
+          title="Legend",
+          loc="lower left",
+          bbox_to_anchor=(1, 0, 0.5, 1))
+
+plt.show()
+#/**
+# * Control
+# */
+main_lbl = []
+main_sizes = []
+main_colors = []
+data = total_feat[7]
+ln = len(data)
+lnn = ln - 1
+
+offset = 99
+main_lbl   = ['Home automation', 'Drone/Vehicle/\nWheelchair',
+              'Nothing', 'Speller', 'Cursor/\nGame', 'Robot/\nRobotic Hand']
+main_sizes = [data[i] for i in range(len(data))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
+main_explode = 0*np.ones(len(main_lbl))
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+
+
+sub_size = []
+sub_colors = []
+sub_explode = 0*np.ones(len(sub_size))
+
+# Plot
+sns.set_style("whitegrid")
+plt.figure(figsize = (4,4), dpi =500)
+plt.title("What was being controlled?\n", loc = 'center')
+plt.pie(main_sizes,
+        labels = main_lbl,
+        colors = main_colors,
+        startangle = 90,
+        frame = True,
+        textprops={"fontsize": 8},
+        explode = main_explode)
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = 0,
+        explode = sub_explode)
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+
+plt.axis('equal')
+plt.tight_layout()
+plt.legend(main_perc_lbl,
+          title="Legend",
+          loc="lower right",
+          bbox_to_anchor=(1, 0, .9, 0))
+
+plt.show()
+
+
+
+
+
