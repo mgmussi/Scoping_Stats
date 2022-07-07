@@ -77,6 +77,7 @@ for tots, names in zip(total_feat, names_feat):
 ############################ FIND RELEVANT INDEXES ############################
 ###############################################################################
 idx = (df['On_ACC'].values != '-')
+idx_sys = [counter for counter, value in enumerate(np.array(df['Acq_sys'])) if value != '-']
 idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
 idx_acc2 = [counter for counter, value in enumerate(np.array(dfc['On_ACC'])) if value != '-']
 idx_age = [counter for counter, value in enumerate(np.array(df['Pop_age'])) if value != '-']
@@ -196,6 +197,21 @@ plt.show()
 # graph.set_xlabel("Year")
 # # plt.ylim([0,18])
 # plt.show()
+###############################################################################
+######################## Barplot for Acq Sys appearances ######################
+###############################################################################
+sns.set_style("darkgrid")
+plt.figure(figsize = (8,6), dpi =300)
+graph = sns.countplot(df['Acq_sys'][idx_sys],
+                      palette = "mako",
+                      order = df['Acq_sys'][idx_sys].value_counts().index)
+graph.set_title("Acquisition systems")
+graph.set_ylabel("Number of appearances")
+graph.set_xlabel("System")
+plt.xticks(rotation=90)
+# plt.ylim([0,18])
+# plt.yticks(range(0,18,2))
+plt.show()
 '''
 ###############################################################################
 ########################### Point plot acc per year ###########################
