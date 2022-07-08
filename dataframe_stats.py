@@ -22,6 +22,7 @@ exec(open("ColorMap.py").read())
 sns.set_style("darkgrid")
 
 cwd = os.getcwd()+'/__Dataframe_ScopingReview.xlsx'
+dfa = pd.read_excel(cwd, sheet_name=0, header=[0])
 df = pd.read_excel(cwd, sheet_name=1, header=[0])
 dfc = pd.read_excel(cwd, sheet_name=2, header=[0])
 pd.set_option('display.max_rows',20)
@@ -77,6 +78,9 @@ for tots, names in zip(total_feat, names_feat):
 ############################ FIND RELEVANT INDEXES ############################
 ###############################################################################
 idx = (df['On_ACC'].values != '-')
+idx_include = [counter for counter, value in enumerate(np.array(dfa['Include'])) if value]
+idx_un_sys = [counter for counter, value in enumerate(np.array(df['UN_SYS'])) if value]
+idx_dif_pop = [counter for counter, value in enumerate(np.array(df['Diff_pop'])) if value]
 idx_sys = [counter for counter, value in enumerate(np.array(df['Acq_sys'])) if value != '-']
 idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
 idx_acc2 = [counter for counter, value in enumerate(np.array(dfc['On_ACC'])) if value != '-']
@@ -176,16 +180,52 @@ def cite_lbl(idx):
             c += 1
         return cite_list
 ###############################################################################
-################# Barplot for Papers/Years (selected articles) ################
+################## Barplot for Papers/Years (selected vs all) #################
 ###############################################################################
+year_lbl = []
+year_t_all = []
+year_t_sel = []
+offset = 101
+bar_colors = [CLR[x+offset][1].hex_format() for x in list(range(0,13))]
+for _, row in dfa.iterrows(): 
+    temp = row['Year']        
+    if not(any(temp == n for n in year_lbl)): year_lbl.append(temp)
+#for every feature name, count how many
+for f in year_lbl:
+    year_t_sel.append(int(sum([1 for _, row in dfa.iterrows() if(row['Year'] == f and int(row['Include']))])))
+    year_t_all.append(int(sum([1 for _, row in dfa.iterrows() if(row['Year'] == f)])))
+    
 sns.set_style("darkgrid")
-plt.figure(figsize = (5,3.5), dpi =300)
-graph = sns.countplot(df['Year'].astype(int), palette = "flare")
-graph.set_title("Papers per Year")
-graph.set_ylabel("Number of articles")
-graph.set_xlabel("Year")
-plt.ylim([0,18])
-plt.yticks(range(0,18,2))
+# sns.set_style("whitegrid")
+plt.figure(figsize = (5,3), dpi =300)
+# graph = sns.countplot(x = year_lbl,
+#                       y = year_t_all,
+#                       palette = "flare",
+#                       alpha = 0.5
+#                       )
+# graph = sns.countplot(x = year_lbl,
+#                       y = year_t_sel,
+#                       palette = "flare")
+plt.bar(year_lbl,
+        year_t_all,
+        alpha = 0.25,
+        color = bar_colors,
+        edgecolor = bar_colors,
+        )
+plt.bar(year_lbl,
+        year_t_sel,
+        alpha = 1,
+        color = bar_colors,
+        edgecolor = bar_colors,
+        )
+plt.title("Papers per Year")
+plt.ylabel("Number of articles")
+plt.xlabel("Year")
+plt.xticks(list(range(2004,2021)))
+# plt.ylim([0,18])
+# plt.yticks(range(0,18,2))
+plt.xticks(rotation=90)
+plt.grid(axis="x")
 plt.show()
 
 ## Barplot for Papers/Years (all articles)
@@ -201,7 +241,7 @@ plt.show()
 ######################## Barplot for Acq Sys appearances ######################
 ###############################################################################
 sns.set_style("darkgrid")
-plt.figure(figsize = (8,6), dpi =300)
+plt.figure(figsize = (5,3.5), dpi =300)
 graph = sns.countplot(df['Acq_sys'][idx_sys],
                       palette = "mako",
                       order = df['Acq_sys'][idx_sys].value_counts().index)
@@ -212,6 +252,35 @@ plt.xticks(rotation=90)
 # plt.ylim([0,18])
 # plt.yticks(range(0,18,2))
 plt.show()
+###############################################################################
+######################## Barplot for Pop Siz appearances ######################
+###############################################################################
+sns.set_style("darkgrid")
+pop = df['Pop_size'][idx_dif_pop].values
+avg_pop = np.mean(pop)
+std_pop = np.std(pop)
+offset = -3
+plt.figure(figsize = (5,3.5), dpi =300)
+graph = sns.countplot(pop.astype(int),
+                      palette = "dark:salmon_r",
+                      # order = df['Pop_size'][idx_sys].value_counts().index
+                      )
+plt.plot([avg_pop+offset, avg_pop+offset], [0, 11], 'r.-', linewidth = .5)
+plt.plot([avg_pop-std_pop+offset, avg_pop-std_pop+offset], [0, 11], 'r--', linewidth = .5)
+plt.plot([avg_pop+std_pop+offset, avg_pop+std_pop+offset], [0, 11], 'r--', linewidth = .5)
+graph.set_title("Population Size")
+graph.set_ylabel("Number of appearances")
+graph.set_xlabel("Number of participants")
+plt.xticks(rotation=0)
+
+# locs, labels = plt.xticks()  # Get the current locations and labels.
+# print(locs)
+# print(labels)
+plt.ylim([0,10.5])
+# plt.yticks(range(0,18,2))
+plt.show()
+
+print("Average Pop. Size: {:.1f}±{:.1f}".format(avg_pop, std_pop))
 '''
 ###############################################################################
 ########################### Point plot acc per year ###########################
