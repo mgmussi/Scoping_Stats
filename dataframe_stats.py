@@ -48,12 +48,25 @@ for i, name in enumerate(names_lbls):
     #and append to the list of features if is its
     #first appearence
     for _, row in df.iterrows(): 
-        temp = row[name]        
-        if not(any(re.fullmatch(temp, n) for n in names_feat[i])): names_feat[i].append(temp)
+        # temp = row[name]        
+        temp = row[name].split(',')
+        for elem in temp:
+            if elem != '-':
+                if not(any(re.fullmatch(elem, n) for n in names_feat[i])): names_feat[i].append(elem)
+        # if not(any(re.fullmatch(temp, n) for n in names_feat[i])): names_feat[i].append(temp)
     #for every feature name, count how many
-    for f in names_feat[i]:
-        total_feat[i].append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row[name] == f and int(row['UN_SYS']))])))
 
+    for f in names_feat[i]:
+        if(name != "Processing_software"):
+            total_feat[i].append(int(sum([row['UN_SYS'] for _, row in df.iterrows() if(row[name] == f and int(row['UN_SYS']))])))
+        else:
+            total_feat[i].append(0)
+            for _, row in df.iterrows():
+                temp = row[name].split(',')
+                for elem in temp:
+                    if(elem == f and row['UN_SYS']):
+                        total_feat[i][-1] += 1
+        
 def pt(val):
     return(float(val/tot_sys*100))
 
@@ -237,6 +250,48 @@ plt.show()
 # graph.set_xlabel("Year")
 # # plt.ylim([0,18])
 # plt.show()
+###############################################################################
+######################## Barplot for Processing systems #######################
+###############################################################################
+names_soft = []
+total_soft = []
+for _, row in df.iterrows(): 
+    # temp = row[name]        
+    temp = row["Processing_software"].split(',')
+    for elem in temp:
+        if elem != '-':
+            if not(any(re.fullmatch(elem, n) for n in names_soft)): names_soft.append(elem)
+#for every feature name, count how many
+for f in names_soft:
+    total_soft.append(0)
+    for _, row in df.iterrows():
+        temp = row["Processing_software"].split(',')
+        for elem in temp:
+            if(elem == f and row['UN_SYS']):
+                total_soft[-1] += 1
+                
+total_soft, names_soft = (list(t) for t in zip(*sorted(zip(total_soft, names_soft))))
+total_soft.reverse()
+names_soft.reverse()
+offset = 18
+bar_colors = [CLR3[x+offset] for x in list(range(0,len(names_soft)))]
+                
+sns.set_style("darkgrid")
+plt.figure(figsize = (5,3.5), dpi =300)
+plt.bar(names_soft,
+        total_soft,
+        alpha = 1,
+        color = bar_colors,
+        edgecolor = bar_colors,
+        )
+plt.title("Development tools")
+plt.ylabel("Number of appearances")
+plt.xlabel("")
+plt.xticks(rotation=90)
+plt.grid(axis="x")
+# plt.ylim([0,18])
+# plt.yticks(range(0,18,2))
+plt.show()
 ###############################################################################
 ######################## Barplot for Acq Sys appearances ######################
 ###############################################################################
@@ -909,13 +964,18 @@ plt.show()
 main_lbl = []
 main_sizes = []
 main_colors = []
+total_feat[7].sort()
 data = total_feat[7]
 ln = len(data)
 lnn = ln - 1
 
-offset = 99
-main_lbl   = ['Home automation', 'Drone/Vehicle/\nWheelchair',
-              'Nothing', 'Speller', 'Cursor/\nGame', 'Robot/\nRobotic Hand']
+offset = 100
+main_lbl   = ['Home automation',
+              'Cursor/\nGame',
+              'Robot/\nRobotic Hand',
+              'Drone/Vehicle/\nWheelchair',
+              'Speller',
+              'Unspecified\nDevice']
 main_sizes = [data[i] for i in range(len(data))]
 main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
@@ -935,7 +995,7 @@ plt.title("What was being controlled?\n", loc = 'center')
 plt.pie(main_sizes,
         labels = main_lbl,
         colors = main_colors,
-        startangle = 90,
+        startangle = 95,
         frame = True,
         textprops={"fontsize": 8},
         explode = main_explode)
@@ -956,6 +1016,9 @@ plt.legend(main_perc_lbl,
           bbox_to_anchor=(1, 0, .9, 0))
 
 plt.show()
+
+
+
 
 
 
