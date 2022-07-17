@@ -15,6 +15,7 @@ import os
 import random
 import itertools
 import re
+import math
 
 
 # execfile("ColorMap.py")
@@ -282,14 +283,14 @@ plt.bar(names_soft,
         total_soft,
         alpha = 1,
         color = bar_colors,
-        edgecolor = bar_colors,
+        edgecolor = "white",
         )
 plt.title("Development tools")
 plt.ylabel("Number of appearances")
 plt.xlabel("")
 plt.xticks(rotation=90)
 plt.grid(axis="x")
-# plt.ylim([0,18])
+plt.xlim([-0.75,len(names_soft)-.25])
 # plt.yticks(range(0,18,2))
 plt.show()
 ###############################################################################
@@ -375,6 +376,44 @@ graph2 = sns.stripplot(x = dfc['Num_steps_command_max'][idx_acc2].astype(int),
 graph.set_title("Accuracy per Number of Commands")
 graph.set_ylabel("Accuracy [%]")
 graph.set_xlabel("Maximum number of commands")
+plt.show()
+###############################################################################
+################ Point plot & boxplot acc per individual input ################
+###############################################################################
+Ins_lbl = []
+Ins_val = []
+sns.set_style("darkgrid")
+plt.figure(figsize = (4,3), dpi =300)
+for _, row in df.iterrows():
+    if row['In1_on_class'] != '-' and row['In1_on_class'] != '--' and not(math.isnan(row['In1_on_class'])):
+        Ins_lbl.append(row['In1'])
+        Ins_val.append(row['In1_on_class'])
+    if row['In2_on_class'] != '-' and row['In2_on_class'] != '--' and not(math.isnan(row['In2_on_class'])):
+        Ins_lbl.append(row['In2'])
+        Ins_val.append(row['In2_on_class'])
+# In1 = [list(df['In1']), list(df['In1_on_class'])]
+# In2 = [list(df['In2']), list(df['In2_on_class'])]
+##append lists together and then plot acc for each type of paradigm
+graph = sns.boxplot(x = Ins_lbl,
+                    y = Ins_val,
+                    data = dfc,
+                    color='gray',
+                    boxprops=dict(alpha=1),
+                    linewidth = 1,
+                    palette='Set3')
+g = sns.stripplot(x = Ins_lbl,
+                  y = Ins_val,
+                  alpha = .9,
+                  marker = 'P',
+                  size = 5,
+                  # alpha = .65,
+                  edgecolor = 'black',
+                  linewidth = .5,
+                  palette= 'Set3')    
+g.set_title("Accuracy per individual input type")
+g.set_ylabel("Accuracy [%]")
+g.set_xlabel("")
+plt.xticks(rotation=90)
 plt.show()
 ###############################################################################
 ######################### Box plot acc per Role of Op #########################
