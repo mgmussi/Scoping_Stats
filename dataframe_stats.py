@@ -28,10 +28,35 @@ df = pd.read_excel(cwd, sheet_name=1, header=[0])
 dfc = pd.read_excel(cwd, sheet_name=2, header=[0])
 pd.set_option('display.max_rows',20)
 pd.set_option('display.max_columns', None)
-# print(df)
-# print(df['ID'].values)
-# print(df['On_ACC'].values)
-
+###############################################################################
+############################ FIND RELEVANT INDEXES ############################
+###############################################################################
+idx = (df['On_ACC'].values != '-')
+idx_include = [counter for counter, value in enumerate(np.array(dfa['Include'])) if value]
+idx_un_sys = [counter for counter, value in enumerate(np.array(df['UN_SYS'])) if value]
+idx_dif_pop = [counter for counter, value in enumerate(np.array(df['Diff_pop'])) if value]
+idx_sys = [counter for counter, value in enumerate(np.array(df['Acq_sys'])) if value != '-']
+idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
+idx_acc2 = [counter for counter, value in enumerate(np.array(dfc['On_ACC'])) if value != '-']
+idx_age = [counter for counter, value in enumerate(np.array(df['Pop_age'])) if value != '-']
+idx_age_to_ = [counter for counter, value in enumerate(np.array(df['Pop_age'].astype(str))) if 'to' in value]
+idx_age_ = [counter for counter, value in enumerate(np.array(df['Pop_age'].astype(str))) if not('to' in value)]
+idx_age_sv = [counter for counter, value in enumerate(np.array(df['Pop_age'][idx_age].astype(str))) if not('-' in value)]
+idx_DivIn = [[counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Heterogeneous'],
+             [counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Homogeneous']]
+idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning,Selective Attention']]
+idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
+             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning,Selective Attention']]
+idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
+idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
+idx_age_single = list(set.intersection(set(idx_age), set(idx_age_), set(idx_acc)))
+idx_age_range = list(set.intersection(set(idx_age), set(idx_age_to_), set(idx_acc)))
+idx_sel_acc = list(set.intersection(set(idx_MeStr[0]), set(idx_acc)))
+idx_opr_acc = list(set.intersection(set(idx_MeStr[1]), set(idx_acc)))
+idx_sel_opr_acc = list(set.intersection(set(idx_MeStr[2]), set(idx_acc)))
 ###############################################################################
 ######################## COUNT NUM OF TAXONOMIC SYSTEMS #######################
 ###############################################################################
@@ -88,35 +113,6 @@ print("------------\n>> {0}: TOTAL NUMBER OF SYSTEMS\n".format(tot_sys))
 for tots, names in zip(total_feat, names_feat):
     pr_v(tots, names)
     print()
-###############################################################################
-############################ FIND RELEVANT INDEXES ############################
-###############################################################################
-idx = (df['On_ACC'].values != '-')
-idx_include = [counter for counter, value in enumerate(np.array(dfa['Include'])) if value]
-idx_un_sys = [counter for counter, value in enumerate(np.array(df['UN_SYS'])) if value]
-idx_dif_pop = [counter for counter, value in enumerate(np.array(df['Diff_pop'])) if value]
-idx_sys = [counter for counter, value in enumerate(np.array(df['Acq_sys'])) if value != '-']
-idx_acc = [counter for counter, value in enumerate(np.array(df['On_ACC'])) if value != '-']
-idx_acc2 = [counter for counter, value in enumerate(np.array(dfc['On_ACC'])) if value != '-']
-idx_age = [counter for counter, value in enumerate(np.array(df['Pop_age'])) if value != '-']
-idx_age_to_ = [counter for counter, value in enumerate(np.array(df['Pop_age'].astype(str))) if 'to' in value]
-idx_age_ = [counter for counter, value in enumerate(np.array(df['Pop_age'].astype(str))) if not('to' in value)]
-idx_age_sv = [counter for counter, value in enumerate(np.array(df['Pop_age'][idx_age].astype(str))) if not('-' in value)]
-idx_DivIn = [[counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Heterogeneous'],
-             [counter for counter, value in enumerate(np.array(df['_Div_input'])) if value == 'Homogeneous']]
-idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
-             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
-             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning,Selective Attention']]
-idx_MeStr = [[counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Selective Attention'],
-             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning'],
-             [counter for counter, value in enumerate(np.array(df['_Mental_str'])) if value == 'Operant Conditioning,Selective Attention']]
-idx_het_acc = list(set.intersection(set(idx_DivIn[0]), set(idx_acc)))
-idx_hom_acc = list(set.intersection(set(idx_DivIn[1]), set(idx_acc)))
-idx_age_single = list(set.intersection(set(idx_age), set(idx_age_), set(idx_acc)))
-idx_age_range = list(set.intersection(set(idx_age), set(idx_age_to_), set(idx_acc)))
-idx_sel_acc = list(set.intersection(set(idx_MeStr[0]), set(idx_acc)))
-idx_opr_acc = list(set.intersection(set(idx_MeStr[1]), set(idx_acc)))
-idx_sel_opr_acc = list(set.intersection(set(idx_MeStr[2]), set(idx_acc)))
 ###############################################################################
 ############################ PIE PLOT COMBINATIONS ############################
 ###############################################################################
@@ -183,14 +179,14 @@ print(comb_mode_op)
 ###############################################################################
 ################################## FUNCTIONS ##################################
 ###############################################################################
-def cite_lbl(idx):
-    if type(idx) == int:
-        return df['Author'][idx]+', '+str(int(df['Year'][idx]))
-    if type(idx) == list:
+def cite_lbl(t):
+    if type(t) == int:
+        return df['Author'][t]+', '+str(int(df['Year'][t]))
+    if type(t) == list:
         cite_list = []
         c = 1
-        for idx_ in idx:
-            cite_list.append(str(c)+'. '+df['Author'][idx_]+', '+str(int(df['Year'][idx_])))
+        for t_ in t:
+            cite_list.append(str(c)+'. '+df['Author'][t_]+', '+str(int(df['Year'][t_])))
             c += 1
         return cite_list
 ###############################################################################
@@ -220,12 +216,12 @@ plt.figure(figsize = (5,3), dpi =300)
 # graph = sns.countplot(x = year_lbl,
 #                       y = year_t_sel,
 #                       palette = "flare")
-plt.bar(year_lbl,
-        year_t_all,
-        alpha = 0.25,
-        color = bar_colors,
-        edgecolor = bar_colors,
-        )
+# plt.bar(year_lbl,
+#         year_t_all,
+#         alpha = 0.25,
+#         color = bar_colors,
+#         edgecolor = bar_colors,
+#         )
 plt.bar(year_lbl,
         year_t_sel,
         alpha = 1,
@@ -236,7 +232,7 @@ plt.title("Papers per Year")
 plt.ylabel("Number of articles")
 plt.xlabel("Year")
 plt.xticks(list(range(2004,2021)))
-# plt.ylim([0,18])
+plt.xlim([2009,2021])
 # plt.yticks(range(0,18,2))
 plt.xticks(rotation=90)
 plt.grid(axis="x")
@@ -497,21 +493,26 @@ Perhaps we only need two or three colours:
 sns.set_style("whitegrid")
 plt.figure(figsize = (5,7), dpi =500)
 c = 1
-he = 35     #blue = healthy only
-nh = 25     #orange = disability only
-bo = 100    #green = both
+he = 35    #blue = healthy only
+nh = 100   #green = disability portion
+bo = 25    #yellow = healthy portion
 
-SEPARATE = True
+SEPARATE = True #True = uses colors he, nh and bo
+                #False = uses random colors
 
+LIMIT = False    #True = limits accuracy to 70%<
+                #False = allows all accuracies
+
+labels = []
 
 def sep_colors(r):
     author = df['Author'][r]
     cond = df['Pop_cond'][r]
     if(author == 'Nann et al.' or author == 'Brennan et al.' or author == 'Soekadar et al.'):
         if cond != 'Healthy':
-            the_color = CLR[bo][1].hex_format()
-        else:
             the_color = CLR[nh][1].hex_format()
+        else:
+            the_color = CLR[bo][1].hex_format()
     else:
         the_color = CLR[he][1].hex_format()
     return the_color
@@ -519,18 +520,27 @@ def sep_colors(r):
 
 
 for _range in idx_age_range:
+    if LIMIT:
+        if df['On_ACC'][_range] < 70:
+            print(">>>>{}: popped for {}\n".format(_range, df['Author'][_range]))
+            # idx_age_range.pop(_range)
+            continue
+
+        labels.append(_range)
+        print(">>>>{}: added {}\n".format(_range, df['Author'][_range]))
+    
     a = 1.1*random.random()
     txt =  str(df['Pop_age'][_range])
     val1 = float(txt[0:df['Pop_age'][_range].index(' to ')] )
     val2 = float(txt[df['Pop_age'][_range].index(' to ') + 4:])
-    
+
     if SEPARATE:
         ##To separate by color
         the_color = sep_colors(_range)
     else:
         ##To keep multi-color
         the_color = CLR[_range][1].hex_format()
-        
+
     plt.plot([val1, val2],
              [df['On_ACC'][_range],
               df['On_ACC'][_range]],
@@ -545,13 +555,6 @@ for _range in idx_age_range:
                      xytext = (3.5*(1+(1-a)),-1),
                      ha = 'left',
                      fontsize = 4)
-    # elif c%4 == 1:
-    #     plt.annotate(str(c),
-    #                  (val1, df['On_ACC'][_range]),
-    #                  textcoords = "offset points",
-    #                  xytext = (-5*(1+(1-a)),-1),
-    #                  ha = 'right',
-    #                  fontsize = 4)
     else:
         plt.annotate(str(c),
                      (val1, df['On_ACC'][_range]),
@@ -560,9 +563,21 @@ for _range in idx_age_range:
                      ha = 'right',
                      fontsize = 4)
     c += 1
-plt.legend(cite_lbl(idx_age_range), fontsize = 3.9, loc = "lower right")
+if LIMIT:
+    plt.legend(cite_lbl(labels), fontsize = 3.4, loc = "upper right")
+else:
+    plt.legend(cite_lbl(idx_age_range), fontsize = 3.9, loc = "lower right")
 
+#/** 
+# * NOTE: Plotting the little arrows
+# * on a second loop so they are not
+# * included on the legend
+# **/
 for _range in idx_age_range:
+    if LIMIT:
+        if df['On_ACC'][_range] < 70:
+            continue
+        
     txt =  str(df['Pop_age'][_range])
     val1 = float(txt[0:df['Pop_age'][_range].index(' to ')] )
     val2 = float(txt[df['Pop_age'][_range].index(' to ') + 4:])
@@ -585,20 +600,34 @@ for _range in idx_age_range:
              color = the_color,
              markersize = 1)
 
+#/** 
+# * NOTE: Plotting single-user accuracies
+# **/
 for _range in idx_age_single:
-    plt.plot(df['Pop_age'][_range], df['On_ACC'][_range], '^',
-             color = CLR[_range<<1][1].hex_format(), markersize = 4,
+    plt.plot(df['Pop_age'][_range],
+             df['On_ACC'][_range],
+             '^',
+             color = CLR[_range<<1][1].hex_format(),
+             markersize = 4,
              markeredgecolor = 'k')
-    plt.annotate(cite_lbl(_range), (df['Pop_age'][_range], df['On_ACC'][_range]),
-                 textcoords = "offset points", xytext = (2,-1), ha = 'left',
+    plt.annotate(cite_lbl(_range),
+                 (df['Pop_age'][_range],
+                  df['On_ACC'][_range]),
+                 textcoords = "offset points",
+                 xytext = (2,-1),
+                 ha = 'left',
                  fontsize = 4)
     
 plt.title("Age range vs. Accuracy", fontsize = 8)
 plt.ylabel("Accuracy [%]", fontsize = 6)
 plt.xlabel("Age [years]", fontsize = 6)
-# plt.yscale("log")
+if LIMIT: plt.ylim(70,101)
 plt.tick_params(size = 1, labelsize = 6)
 plt.show()
+
+
+
+
 #/**
 # * Age ranges overlap
 # */
@@ -814,13 +843,7 @@ main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
-
-sub_lbl = ['ERP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #SSEP
-           'SSEP', 'SMR', 'µ-rhythm', 'SCP', 'self',    #ERP
-           'SSEP', 'ERP', 'µ-rhythm', 'SCP', 'self',    #SMR
-           'SSEP', 'ERP', 'SMR', 'SCP', 'self',         #µ-rhythm
-           'SSEP', 'ERP', 'SMR', 'µ-rhythm', 'self']    #SCP
+    main_perc_lbl.append(main_lbl[c] + "\n" + "{:.2f}%".format((elem/sum(main_sizes)*100)))
 
 sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
 sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
@@ -831,7 +854,7 @@ sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
 plt.title("Percentage of Paradigms\n", loc = 'center')
 plt.pie(main_sizes,
-        labels = main_lbl,
+        labels = main_perc_lbl,
         colors = main_colors,
         startangle = 90,
         frame = True,
@@ -848,14 +871,18 @@ fig.gca().add_artist(centre_circle)
 
 plt.axis('equal')
 plt.tight_layout()
-plt.legend(main_perc_lbl,
-          title="Legend",
-          loc="lower left",
-          bbox_to_anchor=(1, 0, 0.5, 1))
-
+# plt.legend(main_perc_lbl,
+#           title="Legend",
+#           loc="lower left",
+#           bbox_to_anchor=(1, 0, 0.5, 1))
 plt.show()
+
+
+
 #/**
+# * 
 # * Diversity of Input
+# * 
 # */
 main_lbl = []
 main_sizes = []
@@ -870,44 +897,51 @@ main_sizes = [sum(x) for x in data]
 main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
 
 sub_lbl = ['Single-Brain Approach', 'Multi-Brain Approach',
          'Multi-Physiological', 'External Input']
+main_perc_sub_lbl = []
 sub_size = data.reshape(4).tolist()
 sub_colors = [CLR[2+a+offset][1].hex_format() for a in range(len(sub_size))]
 for c, elem in enumerate(sub_size):
-    main_perc_lbl.append(sub_lbl[c] + ": " + "{:.2f}%".format((elem/main_sizes[int(np.floor(c/2))])*100))
+    main_perc_sub_lbl.append(sub_lbl[c] + "\n{:.2f}%".format((elem/main_sizes[int(np.floor(c/2))])*100))
 
 # Plot
 sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
 plt.title("Percentage of Diversity of Input\n", loc = 'center')
 plt.pie(main_sizes,
-        labels = main_lbl,
+        labels = main_perc_lbl,
         colors = main_colors,
         startangle = -45,
         frame = True,
         textprops={"fontsize": 8})
 plt.pie(sub_size,
+        labels = main_perc_sub_lbl,
         colors = sub_colors,
         radius = 0.75,
         startangle = -45,
-        labeldistance = 0.5)
+        labeldistance = .85,
+        textprops={"fontsize": 8})
 centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
 fig = plt.gcf()
 fig.gca().add_artist(centre_circle)
 
 plt.axis('equal')
 plt.tight_layout()
-plt.legend(main_perc_lbl,
-          title="Legend",
-          loc="lower left",
-          bbox_to_anchor=(1, 0, 0.5, 1))
-
+# plt.legend(main_perc_lbl,
+#           title="Legend",
+#           loc="lower left",
+#           bbox_to_anchor=(1, 0, 0.5, 1))
 plt.show()
+
+
+
 #/**
+# *
 # * Stimulus modalities
+# *
 # */
 main_lbl = []
 main_sizes = []
@@ -923,7 +957,7 @@ main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
 
 
 sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
@@ -935,7 +969,7 @@ sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
 plt.title("Percentage of Stimulus Modalities\n", loc = 'center')
 plt.pie(main_sizes,
-        labels = main_lbl,
+        labels = main_perc_lbl,
         colors = main_colors,
         startangle = 90,
         frame = True,
@@ -952,14 +986,18 @@ fig.gca().add_artist(centre_circle)
 
 plt.axis('equal')
 plt.tight_layout()
-plt.legend(main_perc_lbl,
-          title="Legend",
-          loc="lower left",
-          bbox_to_anchor=(1, 0, 0.5, 1))
-
+# plt.legend(main_perc_lbl,
+#           title="Legend",
+#           loc="lower left",
+#           bbox_to_anchor=(1, 0, 0.5, 1))
 plt.show()
+
+
+
 #/**
+# *
 # * Role of Operation
+# *
 # */
 main_lbl = []
 main_sizes = []
@@ -975,7 +1013,7 @@ main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
 
 
 sub_size = []
@@ -987,7 +1025,7 @@ sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
 plt.title("Percentage of Roles of Operation\n", loc = 'center')
 plt.pie(main_sizes,
-        labels = main_lbl,
+        labels = main_perc_lbl,
         colors = main_colors,
         startangle = -65,
         frame = True,
@@ -1010,6 +1048,9 @@ plt.legend(main_perc_lbl,
           bbox_to_anchor=(1, 0, 0.5, 1))
 
 plt.show()
+
+
+
 #/**
 # * Mode of Operation
 # */
