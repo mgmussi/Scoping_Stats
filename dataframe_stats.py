@@ -488,24 +488,76 @@ plt.show()
 ###############################################################################
 ########################### Plot age range vs. acc ############################
 ###############################################################################
+'''
+Perhaps we only need two or three colours:
+    those with only neurotypical people,
+    those with both people with and without disabilities,
+    and those with only people with disabilities.
+'''
 sns.set_style("whitegrid")
 plt.figure(figsize = (5,7), dpi =500)
 c = 1
+he = 35     #blue = healthy only
+nh = 25     #orange = disability only
+bo = 100    #green = both
+
+SEPARATE = True
+
+
+def sep_colors(r):
+    author = df['Author'][r]
+    cond = df['Pop_cond'][r]
+    if(author == 'Nann et al.' or author == 'Brennan et al.' or author == 'Soekadar et al.'):
+        if cond != 'Healthy':
+            the_color = CLR[bo][1].hex_format()
+        else:
+            the_color = CLR[nh][1].hex_format()
+    else:
+        the_color = CLR[he][1].hex_format()
+    return the_color
+
+
+
 for _range in idx_age_range:
     a = 1.1*random.random()
     txt =  str(df['Pop_age'][_range])
     val1 = float(txt[0:df['Pop_age'][_range].index(' to ')] )
     val2 = float(txt[df['Pop_age'][_range].index(' to ') + 4:])
-    plt.plot([val1, val2], [df['On_ACC'][_range], df['On_ACC'][_range]],
-             '-', color = CLR[_range][1].hex_format(), linewidth = 3,
+    
+    if SEPARATE:
+        ##To separate by color
+        the_color = sep_colors(_range)
+    else:
+        ##To keep multi-color
+        the_color = CLR[_range][1].hex_format()
+        
+    plt.plot([val1, val2],
+             [df['On_ACC'][_range],
+              df['On_ACC'][_range]],
+             '-',
+             color = the_color,
+             linewidth = 3,
              alpha = 0.6)
     if c%2 != 1:
-        plt.annotate(str(c), (val2, df['On_ACC'][_range]),
-                     textcoords = "offset points", xytext = (3.5*(1+(1-a)),-1), ha = 'left',
+        plt.annotate(str(c),
+                     (val2, df['On_ACC'][_range]),
+                     textcoords = "offset points",
+                     xytext = (3.5*(1+(1-a)),-1),
+                     ha = 'left',
                      fontsize = 4)
+    # elif c%4 == 1:
+    #     plt.annotate(str(c),
+    #                  (val1, df['On_ACC'][_range]),
+    #                  textcoords = "offset points",
+    #                  xytext = (-5*(1+(1-a)),-1),
+    #                  ha = 'right',
+    #                  fontsize = 4)
     else:
-        plt.annotate(str(c), (val1, df['On_ACC'][_range]),
-                     textcoords = "offset points", xytext = (-3.5*(1+(1-a)),-1), ha = 'right',
+        plt.annotate(str(c),
+                     (val1, df['On_ACC'][_range]),
+                     textcoords = "offset points",
+                     xytext = (-3.5*(1+(1-a)),-1),
+                     ha = 'right',
                      fontsize = 4)
     c += 1
 plt.legend(cite_lbl(idx_age_range), fontsize = 3.9, loc = "lower right")
@@ -515,9 +567,22 @@ for _range in idx_age_range:
     val1 = float(txt[0:df['Pop_age'][_range].index(' to ')] )
     val2 = float(txt[df['Pop_age'][_range].index(' to ') + 4:])
     
-    plt.plot(val1, df['On_ACC'][_range], '>', color = CLR[_range][1].hex_format(),
+    if SEPARATE:
+        ##To separate by color
+        the_color = sep_colors(_range)
+    else:
+        ##To keep multi-color
+        the_color = CLR[_range][1].hex_format()
+    
+    plt.plot(val1,
+             df['On_ACC'][_range],
+             '>',
+             color = the_color,
              markersize = 1)
-    plt.plot(val2, df['On_ACC'][_range], '<', color = CLR[_range][1].hex_format(),
+    plt.plot(val2,
+             df['On_ACC'][_range],
+             '<',
+             color = the_color,
              markersize = 1)
 
 for _range in idx_age_single:
