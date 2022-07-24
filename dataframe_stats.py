@@ -500,7 +500,7 @@ bo = 25    #yellow = healthy portion
 SEPARATE = True #True = uses colors he, nh and bo
                 #False = uses random colors
 
-LIMIT = False    #True = limits accuracy to 70%<
+LIMIT = True    #True = limits accuracy to 70%<
                 #False = allows all accuracies
 
 labels = []
@@ -522,12 +522,9 @@ def sep_colors(r):
 for _range in idx_age_range:
     if LIMIT:
         if df['On_ACC'][_range] < 70:
-            print(">>>>{}: popped for {}\n".format(_range, df['Author'][_range]))
             # idx_age_range.pop(_range)
             continue
-
         labels.append(_range)
-        print(">>>>{}: added {}\n".format(_range, df['Author'][_range]))
     
     a = 1.1*random.random()
     txt =  str(df['Pop_age'][_range])
@@ -843,7 +840,7 @@ main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + "\n" + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
 
 sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
 sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
@@ -852,7 +849,7 @@ sub_explode = 0*np.ones(len(sub_size))
 # Plot
 sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Paradigms\n", loc = 'center')
+plt.title("Percentage of Paradigms\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
         labels = main_perc_lbl,
         colors = main_colors,
@@ -910,7 +907,7 @@ for c, elem in enumerate(sub_size):
 # Plot
 sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Diversity of Input\n", loc = 'center')
+plt.title("Percentage of Diversity of Input\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
         labels = main_perc_lbl,
         colors = main_colors,
@@ -967,7 +964,7 @@ sub_explode = 0*np.ones(len(sub_size))
 # Plot
 sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Stimulus Modalities\n", loc = 'center')
+plt.title("Percentage of Stimulus Modalities\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
         labels = main_perc_lbl,
         colors = main_colors,
@@ -1023,7 +1020,7 @@ sub_explode = 0*np.ones(len(sub_size))
 # Plot
 sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Roles of Operation\n", loc = 'center')
+plt.title("Percentage of Roles of Operation\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
         labels = main_perc_lbl,
         colors = main_colors,
@@ -1078,7 +1075,7 @@ sub_explode = 0*np.ones(len(sub_size))
 # Plot
 sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Modes of Operation\n", loc = 'center')
+plt.title("Percentage of Modes of Operation\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
         labels = main_lbl,
         colors = main_colors,
@@ -1103,8 +1100,12 @@ plt.legend(main_perc_lbl,
           bbox_to_anchor=(1, 0, 0.5, 1))
 
 plt.show()
+
+
 #/**
+# * 
 # * Control
+# * 
 # */
 main_lbl = []
 main_sizes = []
@@ -1115,7 +1116,7 @@ ln = len(data)
 lnn = ln - 1
 
 offset = 100
-main_lbl   = ['Home automation',
+main_lbl   = ['Home\nautomation',
               'Cursor/\nGame',
               'Robot/\nRobotic Hand',
               'Drone/Vehicle/\nWheelchair',
@@ -1126,7 +1127,7 @@ main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_explode = 0*np.ones(len(main_lbl))
 main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + ": " + "{:.2f}%".format((elem/sum(main_sizes)*100)))
+    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
 
 
 sub_size = []
@@ -1136,13 +1137,14 @@ sub_explode = 0*np.ones(len(sub_size))
 # Plot
 sns.set_style("whitegrid")
 plt.figure(figsize = (4,4), dpi =500)
-plt.title("What was being controlled?\n", loc = 'center')
+plt.title("What was being controlled?\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
-        labels = main_lbl,
+        labels = main_perc_lbl,
         colors = main_colors,
         startangle = 95,
         frame = True,
         textprops={"fontsize": 8},
+        labeldistance = 1.15,
         explode = main_explode)
 plt.pie(sub_size,
         colors = sub_colors,
@@ -1155,11 +1157,10 @@ fig.gca().add_artist(centre_circle)
 
 plt.axis('equal')
 plt.tight_layout()
-plt.legend(main_perc_lbl,
-          title="Legend",
-          loc="lower right",
-          bbox_to_anchor=(1, 0, .9, 0))
-
+# plt.legend(main_perc_lbl,
+#           title="Legend",
+#           loc="lower right",
+#           bbox_to_anchor=(1, 0, .9, 0))
 plt.show()
 
 
