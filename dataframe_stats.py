@@ -207,46 +207,31 @@ for f in year_lbl:
     
 sns.set_style("darkgrid")
 # sns.set_style("whitegrid")
-plt.figure(figsize = (5,3), dpi =300)
-# graph = sns.countplot(x = year_lbl,
-#                       y = year_t_all,
-#                       palette = "flare",
-#                       alpha = 0.5
-#                       )
-# graph = sns.countplot(x = year_lbl,
-#                       y = year_t_sel,
-#                       palette = "flare")
+plt.figure(figsize = (5,3.5), dpi =300)
+#/* ALL PAPERS */
 # plt.bar(year_lbl,
 #         year_t_all,
 #         alpha = 0.25,
 #         color = bar_colors,
 #         edgecolor = bar_colors,
 #         )
+
+#/* SELECTED PAPERS */
 plt.bar(year_lbl,
         year_t_sel,
         alpha = 1,
         color = bar_colors,
         edgecolor = bar_colors,
         )
-plt.title("Papers per Year")
-plt.ylabel("Number of articles")
-plt.xlabel("Year")
-plt.xticks(list(range(2004,2021)))
+plt.title("Papers per Year", fontsize = 12)
+plt.ylabel("Number of articles", fontsize = 10)
+plt.xlabel("Year", fontsize = 10)
+plt.xticks(list(range(2004,2021)), rotation=90, fontsize = 8)
 plt.xlim([2009,2021])
-# plt.yticks(range(0,18,2))
-plt.xticks(rotation=90)
+plt.yticks(fontsize = 8)
 plt.grid(axis="x")
 plt.show()
 
-## Barplot for Papers/Years (all articles)
-# a  = [2020, 2015, 2011, 2017, 2019, 2018, 2018, 2020, 2012, 2020, 2016, 2015, 2017, 2020, 2020, 2017, 2020, 2018, 2014, 2014, 2019, 2014, 2019, 2015, 2016, 2014, 2018, 2015, 2014, 2020, 2020, 2016, 2020, 2020, 2015, 2020, 2019, 2018, 2020, 2020, 2019, 2017, 2020, 2012, 2010, 2016, 2012, 2018, 2015, 2013, 2019, 2016, 2015, 2013, 2016, 2015, 2004, 2019, 2019, 2020, 2018, 2016, 2014, 2013, 2019, 2018, 2018, 2015, 2012, 2019, 2011, 2013, 2018, 2018, 2017, 2015, 2015, 2018, 2016, 2019, 2018, 2014, 2017, 2020, 2019, 2013, 2015, 2017, 2017, 2014, 2018, 2018, 2016, 2015, 2016, 2016, 2017, 2015, 2014, 2018, 2019, 2013, 2013, 2010, 2016, 2019, 2017, 2017, 2016, 2015, 2017, 2015, 2013, 2015, 2018, 2013, 2019, 2013, 2016, 2017, 2015, 2017, 2011, 2011, 2013, 2019, 2017, 2011, 2019, 2020, 2012, 2014, 2020, 2015, 2019, 2015, 2017, 2015, 2010, 2019, 2017, 2017, 2019, 2014, 2018, 2015, 2019, 2015, 2018, 2019, 2020, 2017]
-# plt.figure(figsize = (5,3.5), dpi =300)
-# graph = sns.countplot(a, palette = "rocket")
-# graph.set_title("Papers per Year")
-# graph.set_ylabel("Number of articles")
-# graph.set_xlabel("Year")
-# # plt.ylim([0,18])
-# plt.show()
 ###############################################################################
 ######################## Barplot for Processing systems #######################
 ###############################################################################
@@ -274,17 +259,18 @@ offset = 18
 bar_colors = [CLR3[x+offset] for x in list(range(0,len(names_soft)))]
                 
 sns.set_style("darkgrid")
-plt.figure(figsize = (5,3.5), dpi =300)
+plt.figure(figsize = (5,4), dpi =300)
 plt.bar(names_soft,
         total_soft,
         alpha = 1,
         color = bar_colors,
         edgecolor = "white",
         )
-plt.title("Development tools")
-plt.ylabel("Number of appearances")
+plt.title("Development tools", fontsize = 12)
+plt.ylabel("Number of appearances", fontsize = 10)
 plt.xlabel("")
-plt.xticks(rotation=90)
+plt.xticks(rotation=90, fontsize = 8)
+plt.yticks(fontsize = 8)
 plt.grid(axis="x")
 plt.xlim([-0.75,len(names_soft)-.25])
 # plt.yticks(range(0,18,2))
@@ -297,33 +283,37 @@ plt.figure(figsize = (5,3.5), dpi =300)
 graph = sns.countplot(df['Acq_sys'][idx_sys],
                       palette = "mako",
                       order = df['Acq_sys'][idx_sys].value_counts().index)
-graph.set_title("Acquisition systems")
-graph.set_ylabel("Number of appearances")
-graph.set_xlabel("System")
-plt.xticks(rotation=90)
+graph.set_title("Acquisition systems", fontsize = 12)
+graph.set_ylabel("Number of appearances", fontsize = 10)
+graph.set_xlabel("", fontsize = 10)
+plt.xticks(rotation=90, fontsize = 8)
+plt.yticks(fontsize = 8)
 # plt.ylim([0,18])
-# plt.yticks(range(0,18,2))
 plt.show()
 ###############################################################################
 ######################## Barplot for Pop Siz appearances ######################
 ###############################################################################
+AVG_LINES = False
+
 sns.set_style("darkgrid")
 pop = df['Pop_size'][idx_dif_pop].values
-avg_pop = np.mean(pop)
-std_pop = np.std(pop)
-offset = -3
 plt.figure(figsize = (5,3.5), dpi =300)
 graph = sns.countplot(pop.astype(int),
                       palette = "dark:salmon_r",
                       # order = df['Pop_size'][idx_sys].value_counts().index
                       )
-plt.plot([avg_pop+offset, avg_pop+offset], [0, 11], 'r.-', linewidth = .5)
-plt.plot([avg_pop-std_pop+offset, avg_pop-std_pop+offset], [0, 11], 'r--', linewidth = .5)
-plt.plot([avg_pop+std_pop+offset, avg_pop+std_pop+offset], [0, 11], 'r--', linewidth = .5)
-graph.set_title("Population Size")
-graph.set_ylabel("Number of appearances")
-graph.set_xlabel("Number of participants")
-plt.xticks(rotation=0)
+if AVG_LINES:
+    avg_pop = np.mean(pop)
+    std_pop = np.std(pop)
+    offset = -3
+    plt.plot([avg_pop+offset, avg_pop+offset], [0, 11], 'r.-', linewidth = .5)
+    plt.plot([avg_pop-std_pop+offset, avg_pop-std_pop+offset], [0, 11], 'r--', linewidth = .5)
+    plt.plot([avg_pop+std_pop+offset, avg_pop+std_pop+offset], [0, 11], 'r--', linewidth = .5)
+graph.set_title("Population Size", fontsize = 12)
+graph.set_ylabel("Number of appearances", fontsize = 10)
+graph.set_xlabel("Number of participants", fontsize = 10)
+plt.xticks(rotation=0, fontsize = 8)
+plt.yticks(fontsize = 8)
 
 # locs, labels = plt.xticks()  # Get the current locations and labels.
 # print(locs)
@@ -350,13 +340,14 @@ plt.show()
 ################## Point plot & boxplot acc per num commands ##################
 ###############################################################################
 sns.set_style("darkgrid")
-plt.figure(figsize = (5,3), dpi =300)
+plt.figure(figsize = (5,5), dpi =300)
 graph = sns.boxplot(x = dfc['Num_steps_command_max'][idx_acc2].astype(int),
                       y = dfc['On_ACC'][idx_acc2].astype(float),
                       data = dfc,
                       # edgecolor='gray',
                       # size=12.5,
                       # alpha = .65,
+                      linewidth = 1,
                       palette='Set2')
 graph2 = sns.stripplot(x = dfc['Num_steps_command_max'][idx_acc2].astype(int),
                       y = dfc['On_ACC'][idx_acc2].astype(float),
@@ -369,9 +360,11 @@ graph2 = sns.stripplot(x = dfc['Num_steps_command_max'][idx_acc2].astype(int),
                       palette='Set2',
                       color = 'gray')
 # sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
-graph.set_title("Accuracy per Number of Commands")
-graph.set_ylabel("Accuracy [%]")
-graph.set_xlabel("Maximum number of commands")
+graph.set_title("Accuracy per Number of Commands", fontsize = 12)
+graph.set_ylabel("Accuracy [%]", fontsize = 10)
+graph.set_xlabel("Maximum number of commands", fontsize = 10)
+plt.xticks(fontsize = 8)
+plt.yticks(fontsize = 8)
 plt.show()
 ###############################################################################
 ################ Point plot & boxplot acc per individual input ################
@@ -379,7 +372,7 @@ plt.show()
 Ins_lbl = []
 Ins_val = []
 sns.set_style("darkgrid")
-plt.figure(figsize = (4,3), dpi =300)
+plt.figure(figsize = (5,3.7), dpi =300)
 for _, row in df.iterrows():
     if row['In1_on_class'] != '-' and row['In1_on_class'] != '--' and not(math.isnan(row['In1_on_class'])):
         Ins_lbl.append(row['In1'])
@@ -406,14 +399,16 @@ g = sns.stripplot(x = Ins_lbl,
                   edgecolor = 'black',
                   linewidth = .5,
                   palette= 'Set3')    
-g.set_title("Accuracy per individual input type")
-g.set_ylabel("Accuracy [%]")
-g.set_xlabel("")
-plt.xticks(rotation=90)
+g.set_title("Accuracy per individual input type", fontsize = 12)
+g.set_ylabel("Accuracy [%]", fontsize = 10)
+g.set_xlabel("", fontsize = 10)
+plt.xticks(rotation=90, fontsize = 8)
+plt.yticks(fontsize = 8)
 plt.show()
 ###############################################################################
 ######################### Box plot acc per Role of Op #########################
 ###############################################################################
+'''
 sns.set_style("darkgrid")
 plt.figure(figsize = (5,4), dpi =300)
 # graph = sns.stripplot(x = df['_Role_op'][idx_acc], y = df['On_ACC'][idx_acc].astype(float),
@@ -424,18 +419,22 @@ graph = sns.boxplot(x = df['_Role_op'][idx_acc],
                     # edgecolor='gray',
                     # size=12.5,
                     # alpha = .65,
+                    linewidth = 1,
                     palette='Set2')   
 # sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
-graph.set_title("Accuracy per Role of Operation")
-graph.set_ylabel("Accuracy [%]")
-graph.set_xlabel("Role of Operation")
+graph.set_title("Accuracy per Role of Operation", fontsize = 12)
+graph.set_ylabel("Accuracy [%]", fontsize = 10)
+graph.set_xlabel("Role of Operation", fontsize = 10)
 graph.set_xticklabels(["Sequential", "Simultaneous"])
+plt.xticks(fontsize = 8)
+plt.yticks(fontsize = 8)
 plt.show()
+'''
 ###############################################################################
 ######################### Box plot acc per Stim Modal #########################
 ###############################################################################
 sns.set_style("darkgrid")
-plt.figure(figsize = (10,4), dpi =300)
+plt.figure(figsize = (5,4), dpi =300)
 # graph = sns.stripplot(x = df['_Role_op'][idx_acc], y = df['On_ACC'][idx_acc].astype(float),
 #               data = df, edgecolor='gray', size=12.5, alpha = .65, palette='Set2')    
 graph = sns.boxplot(x = df['_Stim_mod'][idx_acc],
@@ -447,18 +446,24 @@ graph = sns.boxplot(x = df['_Stim_mod'][idx_acc],
                     # edgecolor='gray',
                     # size=12.5,
                     # alpha = .65,
+                    linewidth = 1,
                     palette='Set2')   
 # sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
-graph.set_title("Accuracy per Stimulus Modalities")
-graph.set_ylabel("Accuracy [%]")
-graph.set_xlabel("\nRole of Operation")
+graph.set_title("Accuracy per Stimulus Modalities", fontsize = 12)
+graph.set_ylabel("Accuracy [%]", fontsize = 10)
+graph.set_xlabel("\nRole of Operation", fontsize = 10)
 graph.set_xticklabels(["Visual", "Visual &\nAuditory", "Visual &\nOperant",
                        "Visual,\nOperant &\nAuditory", "Operant", "Auditory",
                        "Operant &\nTactile", "Tactile"])
 plt.tick_params(size = 1, labelsize = 9)
+plt.xticks(rotation = 90, fontsize = 8)
+plt.yticks(fontsize = 8)
 plt.show()
 
-
+###############################################################################
+######################### Box plot acc per Num Target #########################
+###############################################################################
+'''
 sns.set_style("darkgrid")
 plt.figure(figsize = (10,4), dpi =300)
 
@@ -471,16 +476,20 @@ graph = sns.boxplot(x = df['Num_commands'][idx_acc],
                     # edgecolor='gray',
                     # size=12.5,
                     # alpha = .65,
+                    linewidth = 1,
                     palette='Set2')   
 # sns.rugplot(data = df, x = df['Year'][idx_acc], y = df['On_ACC'][idx_acc])
-graph.set_title("Accuracy per Number of Targets")
-graph.set_ylabel("Accuracy [%]")
-graph.set_xlabel("\nNumber of Targets")
+graph.set_title("Accuracy per Number of Targets", fontsize = 12)
+graph.set_ylabel("Accuracy [%]", fontsize = 10)
+graph.set_xlabel("\nNumber of Targets", fontsize = 10)
 # graph.set_xticklabels(["Visual", "Visual &\nAuditory", "Visual &\nOperant",
 #                        "Visual,\nOperant &\nAuditory", "Operant", "Auditory",
 #                        "Operant &\nTactile", "Tactile"])
 plt.tick_params(size = 1, labelsize = 9)
+plt.xticks(fontsize = 8)
+plt.yticks(fontsize = 8)
 plt.show()
+'''
 ###############################################################################
 ########################### Plot age range vs. acc ############################
 ###############################################################################
@@ -491,7 +500,7 @@ Perhaps we only need two or three colours:
     and those with only people with disabilities.
 '''
 sns.set_style("whitegrid")
-plt.figure(figsize = (5,7), dpi =500)
+plt.figure(figsize = (7.5, 10.5), dpi =500)
 c = 1
 he = 35    #blue = healthy only
 nh = 100   #green = disability portion
@@ -543,7 +552,7 @@ for _range in idx_age_range:
               df['On_ACC'][_range]],
              '-',
              color = the_color,
-             linewidth = 3,
+             linewidth = 5,
              alpha = 0.6)
     if c%2 != 1:
         plt.annotate(str(c),
@@ -551,19 +560,19 @@ for _range in idx_age_range:
                      textcoords = "offset points",
                      xytext = (3.5*(1+(1-a)),-1),
                      ha = 'left',
-                     fontsize = 4)
+                     fontsize = 5.6)
     else:
         plt.annotate(str(c),
                      (val1, df['On_ACC'][_range]),
                      textcoords = "offset points",
                      xytext = (-3.5*(1+(1-a)),-1),
                      ha = 'right',
-                     fontsize = 4)
+                     fontsize = 5.6)
     c += 1
 if LIMIT:
-    plt.legend(cite_lbl(labels), fontsize = 3.4, loc = "upper right")
+    plt.legend(cite_lbl(labels), fontsize = 5, loc = "upper right")
 else:
-    plt.legend(cite_lbl(idx_age_range), fontsize = 3.9, loc = "lower right")
+    plt.legend(cite_lbl(idx_age_range), fontsize = 5.5, loc = "lower right")
 
 #/** 
 # * NOTE: Plotting the little arrows
@@ -590,22 +599,23 @@ for _range in idx_age_range:
              df['On_ACC'][_range],
              '>',
              color = the_color,
-             markersize = 1)
+             markersize = 1.5)
     plt.plot(val2,
              df['On_ACC'][_range],
              '<',
              color = the_color,
-             markersize = 1)
+             markersize = 1.5)
 
 #/** 
 # * NOTE: Plotting single-user accuracies
 # **/
+clr_arr = [100,35,35]
 for _range in idx_age_single:
     plt.plot(df['Pop_age'][_range],
              df['On_ACC'][_range],
              '^',
-             color = CLR[_range<<1][1].hex_format(),
-             markersize = 4,
+             color = CLR[clr_arr.pop()][1].hex_format(),
+             markersize = 5.6,
              markeredgecolor = 'k')
     plt.annotate(cite_lbl(_range),
                  (df['Pop_age'][_range],
@@ -613,18 +623,16 @@ for _range in idx_age_single:
                  textcoords = "offset points",
                  xytext = (2,-1),
                  ha = 'left',
-                 fontsize = 4)
+                 fontsize = 6)
     
-plt.title("Age range vs. Accuracy", fontsize = 8)
-plt.ylabel("Accuracy [%]", fontsize = 6)
-plt.xlabel("Age [years]", fontsize = 6)
+plt.title("Age range vs. Accuracy", fontsize = 12)
+plt.ylabel("Accuracy [%]", fontsize = 10)
+plt.xlabel("Age [years]", fontsize = 10)
 if LIMIT: plt.ylim(70,101)
 plt.tick_params(size = 1, labelsize = 6)
+plt.xticks(fontsize = 8)
+plt.yticks(fontsize = 8)
 plt.show()
-
-
-
-
 #/**
 # * Age ranges overlap
 # */
@@ -664,6 +672,7 @@ plt.tick_params(
 plt.ylim(0.999,1.001)
 plt.tight_layout()
 plt.show()
+'''
 ###############################################################################
 ################################# Violin plot #################################
 ###############################################################################
@@ -726,11 +735,11 @@ g = sns.violinplot(x = df['_Mental_str'][idx_acc],
 g.set_xticklabels(['Operant\nConditioning', 'Operant Conditioning\n& Selective Attention',
                    'Selective\nAttention'])
 # sns.set(font_scale = 1)
-plt.title("Accuracy distribution for Mental Strategies")
-plt.ylabel("Accuracy [%]")
-plt.xlabel("")
+plt.title("Accuracy distribution for Mental Strategies", fontsize = 12)
+plt.ylabel("Accuracy [%]", fontsize = 10)
+plt.xlabel("", fontsize = 10)
 plt.show()
-'''
+
 ###############################################################################
 ################################# Points plot #################################
 ###############################################################################
@@ -823,60 +832,6 @@ plt.show()
 ################################## Pie plot ###################################
 ############################################################################### 
 #/**
-# * Brain signal
-# */
-main_lbl = []
-main_sizes = []
-main_colors = []
-data = comb_parad
-ln = len(data[0])
-lnn = ln - 1
-
-
-offset = 10
-main_lbl   = ['SSEP', 'ERP', 'SMR', 'µ-rhythm', 'SCP']
-main_sizes = [data[i,i] for i in range(len(data))]
-main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
-main_explode = 0*np.ones(len(main_lbl))
-main_perc_lbl = []
-for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
-
-sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
-sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
-sub_explode = 0*np.ones(len(sub_size))
-
-# Plot
-sns.set_style("whitegrid")
-plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Paradigms\n", loc = 'center', fontsize = 12)
-plt.pie(main_sizes,
-        labels = main_perc_lbl,
-        colors = main_colors,
-        startangle = 90,
-        frame = True,
-        textprops={"fontsize": 8},
-        explode = main_explode)
-plt.pie(sub_size,
-        colors = sub_colors,
-        radius = 0.75,
-        startangle = 90,
-        explode = sub_explode)
-centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
-fig = plt.gcf()
-fig.gca().add_artist(centre_circle)
-
-plt.axis('equal')
-plt.tight_layout()
-# plt.legend(main_perc_lbl,
-#           title="Legend",
-#           loc="lower left",
-#           bbox_to_anchor=(1, 0, 0.5, 1))
-plt.show()
-
-
-
-#/**
 # * 
 # * Diversity of Input
 # * 
@@ -896,8 +851,8 @@ main_perc_lbl = []
 for c, elem in enumerate(main_sizes):
     main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
 
-sub_lbl = ['Single-Brain Approach', 'Multi-Brain Approach',
-         'Multi-Physiological', 'External Input']
+sub_lbl = ['Single-Brain', 'Multi-Brain',
+         'Multi-\nPhysiological', 'External\nInput']
 main_perc_sub_lbl = []
 sub_size = data.reshape(4).tolist()
 sub_colors = [CLR[2+a+offset][1].hex_format() for a in range(len(sub_size))]
@@ -906,21 +861,71 @@ for c, elem in enumerate(sub_size):
 
 # Plot
 sns.set_style("whitegrid")
-plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Diversity of Input\n", loc = 'center', fontsize = 12)
+plt.figure(figsize = (3.5,3.5), dpi =500)
 plt.pie(main_sizes,
         labels = main_perc_lbl,
         colors = main_colors,
-        startangle = -45,
+        startangle = 135,
         frame = True,
         textprops={"fontsize": 8})
 plt.pie(sub_size,
-        labels = main_perc_sub_lbl,
+        # labels = main_perc_sub_lbl,
         colors = sub_colors,
         radius = 0.75,
-        startangle = -45,
+        startangle =135,
         labeldistance = .85,
-        textprops={"fontsize": 8})
+        textprops={"fontsize": 8, "color":"black"})
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+plt.axis('equal')
+plt.tight_layout()
+# plt.legend(main_perc_lbl,
+#           title="Legend",
+#           loc="lower left",
+#           bbox_to_anchor=(1, 0, 0.5, 1))
+plt.title("Percentage of Diversity of Input\n", loc = 'center', fontsize = 12)
+plt.show()
+
+
+#/**
+# * Brain signal
+# */
+main_lbl = []
+main_sizes = []
+main_colors = []
+data = comb_parad
+ln = len(data[0])
+lnn = ln - 1
+
+offset = 10
+main_lbl   = ['SSEP', 'ERP', 'SMR', 'µ-rhythm', 'SCP']
+main_sizes = [data[i,i] for i in range(len(data))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
+main_explode = 0*np.ones(len(main_lbl))
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
+
+sub_size = [data[a,b] for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
+sub_colors = [CLR[b+offset][1].hex_format() if b<lnn else CLR[a+offset][1].hex_format() for a,b in itertools.product(range(ln), repeat = 2) if a!=b and a<lnn]
+sub_explode = 0*np.ones(len(sub_size))
+
+# Plot
+sns.set_style("whitegrid")
+plt.figure(figsize = (3.5,3.5), dpi =500)
+plt.pie(main_sizes,
+        labels = main_perc_lbl,
+        colors = main_colors,
+        startangle = 45,
+        frame = True,
+        textprops={"fontsize": 8},
+        explode = main_explode)
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = 45,
+        explode = sub_explode)
 centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
 fig = plt.gcf()
 fig.gca().add_artist(centre_circle)
@@ -931,6 +936,7 @@ plt.tight_layout()
 #           title="Legend",
 #           loc="lower left",
 #           bbox_to_anchor=(1, 0, 0.5, 1))
+plt.title("Percentage of Paradigms\n", loc = 'center', fontsize = 12)
 plt.show()
 
 
@@ -963,19 +969,18 @@ sub_explode = 0*np.ones(len(sub_size))
 
 # Plot
 sns.set_style("whitegrid")
-plt.figure(figsize = (4,4), dpi =500)
-plt.title("Percentage of Stimulus Modalities\n", loc = 'center', fontsize = 12)
+plt.figure(figsize = (3.5,3.5), dpi =500)
 plt.pie(main_sizes,
         labels = main_perc_lbl,
         colors = main_colors,
-        startangle = 90,
+        startangle = 45,
         frame = True,
         textprops={"fontsize": 8},
         explode = main_explode)
 plt.pie(sub_size,
         colors = sub_colors,
         radius = 0.75,
-        startangle = 90,
+        startangle = 45,
         explode = sub_explode)
 centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
 fig = plt.gcf()
@@ -987,10 +992,80 @@ plt.tight_layout()
 #           title="Legend",
 #           loc="lower left",
 #           bbox_to_anchor=(1, 0, 0.5, 1))
+plt.title("Percentage of Stimulus Modalities\n", loc = 'center', fontsize = 12)
 plt.show()
 
 
+###################
+###################
+###################
 
+
+#/**
+# * 
+# * Control
+# * 
+# */
+main_lbl = []
+main_sizes = []
+main_colors = []
+total_feat[7].sort()
+data = total_feat[7]
+ln = len(data)
+lnn = ln - 1
+
+offset = 100
+main_lbl   = ['Home\nautomation',
+              'Cursor/\nGame',
+              'Robot/\nRobotic Hand',
+              'Drone/Vehicle/\nWheelchair',
+              'Speller',
+              'Unspecified\nDevice']
+main_sizes = [data[i] for i in range(len(data))]
+main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
+main_explode = 0*np.ones(len(main_lbl))
+main_perc_lbl = []
+for c, elem in enumerate(main_sizes):
+    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
+
+sub_size = []
+sub_colors = []
+sub_explode = 0*np.ones(len(sub_size))
+
+# Plot
+sns.set_style("whitegrid")
+plt.figure(figsize = (5,5), dpi =500)
+plt.pie(main_sizes,
+        labels = main_perc_lbl,
+        colors = main_colors,
+        startangle = 95,
+        frame = True,
+        textprops={"fontsize": 8},
+        labeldistance = 1.15,
+        explode = main_explode)
+plt.pie(sub_size,
+        colors = sub_colors,
+        radius = 0.75,
+        startangle = 0,
+        explode = sub_explode)
+centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+plt.axis('equal')
+plt.tight_layout()
+# plt.legend(main_perc_lbl,
+#           title="Legend",
+#           loc="lower right",
+#           bbox_to_anchor=(1, 0, .9, 0))
+plt.title("What was being controlled?\n", loc = 'center', fontsize = 12)
+plt.show()
+
+
+###################
+###################
+###################
+
+'''
 #/**
 # *
 # * Role of Operation
@@ -1019,7 +1094,7 @@ sub_explode = 0*np.ones(len(sub_size))
 
 # Plot
 sns.set_style("whitegrid")
-plt.figure(figsize = (4,4), dpi =500)
+plt.figure(figsize = (5,5), dpi =500)
 plt.title("Percentage of Roles of Operation\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
         labels = main_perc_lbl,
@@ -1074,7 +1149,7 @@ sub_explode = 0*np.ones(len(sub_size))
 
 # Plot
 sns.set_style("whitegrid")
-plt.figure(figsize = (4,4), dpi =500)
+plt.figure(figsize = (5,5), dpi =500)
 plt.title("Percentage of Modes of Operation\n", loc = 'center', fontsize = 12)
 plt.pie(main_sizes,
         labels = main_lbl,
@@ -1100,73 +1175,4 @@ plt.legend(main_perc_lbl,
           bbox_to_anchor=(1, 0, 0.5, 1))
 
 plt.show()
-
-
-#/**
-# * 
-# * Control
-# * 
-# */
-main_lbl = []
-main_sizes = []
-main_colors = []
-total_feat[7].sort()
-data = total_feat[7]
-ln = len(data)
-lnn = ln - 1
-
-offset = 100
-main_lbl   = ['Home\nautomation',
-              'Cursor/\nGame',
-              'Robot/\nRobotic Hand',
-              'Drone/Vehicle/\nWheelchair',
-              'Speller',
-              'Unspecified\nDevice']
-main_sizes = [data[i] for i in range(len(data))]
-main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
-main_explode = 0*np.ones(len(main_lbl))
-main_perc_lbl = []
-for c, elem in enumerate(main_sizes):
-    main_perc_lbl.append(main_lbl[c] + "\n{:.2f}%".format((elem/sum(main_sizes)*100)))
-
-
-sub_size = []
-sub_colors = []
-sub_explode = 0*np.ones(len(sub_size))
-
-# Plot
-sns.set_style("whitegrid")
-plt.figure(figsize = (4,4), dpi =500)
-plt.title("What was being controlled?\n", loc = 'center', fontsize = 12)
-plt.pie(main_sizes,
-        labels = main_perc_lbl,
-        colors = main_colors,
-        startangle = 95,
-        frame = True,
-        textprops={"fontsize": 8},
-        labeldistance = 1.15,
-        explode = main_explode)
-plt.pie(sub_size,
-        colors = sub_colors,
-        radius = 0.75,
-        startangle = 0,
-        explode = sub_explode)
-centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
-fig = plt.gcf()
-fig.gca().add_artist(centre_circle)
-
-plt.axis('equal')
-plt.tight_layout()
-# plt.legend(main_perc_lbl,
-#           title="Legend",
-#           loc="lower right",
-#           bbox_to_anchor=(1, 0, .9, 0))
-plt.show()
-
-
-
-
-
-
-
-
+'''
