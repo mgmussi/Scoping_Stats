@@ -309,6 +309,7 @@ if AVG_LINES:
     plt.plot([avg_pop+offset, avg_pop+offset], [0, 11], 'r.-', linewidth = .5)
     plt.plot([avg_pop-std_pop+offset, avg_pop-std_pop+offset], [0, 11], 'r--', linewidth = .5)
     plt.plot([avg_pop+std_pop+offset, avg_pop+std_pop+offset], [0, 11], 'r--', linewidth = .5)
+    print("Average Pop. Size: {:.1f}±{:.1f}".format(avg_pop, std_pop))
 graph.set_title("Population Size", fontsize = 12)
 graph.set_ylabel("Number of appearances", fontsize = 10)
 graph.set_xlabel("Number of participants", fontsize = 10)
@@ -322,7 +323,7 @@ plt.ylim([0,10.5])
 # plt.yticks(range(0,18,2))
 plt.show()
 
-print("Average Pop. Size: {:.1f}±{:.1f}".format(avg_pop, std_pop))
+
 '''
 ###############################################################################
 ########################### Point plot acc per year ###########################
@@ -844,7 +845,7 @@ ln = len(data[0])
 lnn = ln - 1
 
 offset = 50
-main_lbl   = ['Heterogeneous', 'Homogeneous']
+main_lbl   = ['Homogeneous', 'Heterogeneous']
 main_sizes = [sum(x) for x in data]
 main_colors= [CLR[i+offset][1].hex_format() for i in range(len(data))]
 main_perc_lbl = []
